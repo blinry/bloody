@@ -100,16 +100,89 @@ function love.load()
     world:setCallbacks(beginContact)
 
     camera = Camera(300, 300)
-    --camera.smoother = Camera.smooth.damped(3)
-    camera:zoom(1)
+    camera.smoother = Camera.smooth.damped(3)
+    camera:zoom(0.5)
 
     --love.graphics.setFont(fonts.unkempt[fontsize])
-    love.graphics.setBackgroundColor(0, 0, 200)
+    love.graphics.setBackgroundColor(0, 0, 0)
+
+    initGame()
+end
+
+function createCell(x, y)
+    cell = {}
+    cell.body = love.physics.newBody(world, 0, 0, "dynamic")
+    cell.shape = love.physics.newCircleShape(0, 0, 100)
+    cell.fixture = love.physics.newFixture(cell.body, cell.shape)
+    cell.body:setInertia(100000)
+    cell.body:setMass(10)
+    cell.fixture:setFriction(0)
+    cell.body:setPosition(x, y)
+    return cell
+end
+
+function createPath(points)
+    prev = nil
+    for i, point in pairs(points) do
+        if prev then
+            createWall(prev.x, prev.y, point.x, point.y)
+        end
+        prev = point
+    end
+end
+
+function createWall(x1, y1, x2, y2)
+    wall = {}
+    wall.body = love.physics.newBody(world, 0, 0)
+    wall.shape = love.physics.newEdgeShape(x1, y1, x2, y2)
+    wall.fixture = love.physics.newFixture(wall.body, wall.shape)
+    wall.fixture:setFriction(0)
+
+    wall.x1 = x1
+    wall.y1 = y1
+    wall.x2 = x2
+    wall.y2 = y2
+
+    table.insert(walls, wall)
+end
+
+function initGame()
+    cells = {}
+    for i = 1, 20 do
+        c = createCell(math.random(0, 1000), math.random(0, 1000))
+        table.insert(cells, c)
+    end
+    player = cells[2]
+
+    walls = {}
+
+    createPath({{x=0, y=0}, {x=4000, y=0}, {x=4000, y=4000}, {x=0, y=4000}, {x=0, y=0}})
 end
 
 function love.update(dt)
     Timer.update(dt)
     world:update(dt)
+
+    for i, cell in pairs(cells) do
+        if i%2 == 0 then
+            if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
+                cell.body:applyForce(100000, 0, 0, 0)
+            end
+            if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
+                cell.body:applyForce(-100000, 0, 0, 0)
+            end
+            if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
+                cell.body:applyForce(0, -100000, 0, 0)
+            end
+            if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
+                cell.body:applyForce(0, 100000, 0, 0)
+            end
+        end
+    end
+
+    x, y = player.body:getPosition()
+
+    camera:lookAt(x, y)
 end
 
 function love.keypressed(key)
@@ -136,6 +209,15 @@ end
 function love.draw()
     -- draw world
     camera:attach()
+
+    for i, cell in pairs(cells) do
+        x, y = cell.body:getPosition()
+        love.graphics.draw(images.red, x, y)
+    end
+
+    for i, wall in pairs(walls) do
+        love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
+    end
 
     camera:detach()
 
