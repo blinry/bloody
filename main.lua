@@ -101,7 +101,7 @@ function love.load()
 
     camera = Camera(300, 300)
     camera.smoother = Camera.smooth.damped(3)
-    camera:zoom(0.1)
+    camera:zoom(1)
 
     --love.graphics.setFont(fonts.unkempt[fontsize])
     love.graphics.setBackgroundColor(0, 0, 0)
@@ -159,7 +159,7 @@ function initGame()
     walls = {}
 
     parseWorld("level.txt")
-    wallipyTiles(1000)
+    wallipyTiles(3000)
     --createPath({{0, 0}, {4000, 0}, {4000, 4000}, {0, 4000}, {0, 0}})
 end
 
@@ -216,7 +216,7 @@ function love.draw()
 
     for i, cell in pairs(cells) do
         x, y = cell.body:getPosition()
-        love.graphics.draw(images.red, x, y)
+        love.graphics.draw(images.bluti, x, y)
     end
 
     for i, wall in pairs(walls) do
