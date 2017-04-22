@@ -1,4 +1,5 @@
 require "slam"
+require "game"
 vector = require "hump.vector"
 Timer = require "hump.timer"
 Camera = require "hump.camera"
