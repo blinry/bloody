@@ -128,9 +128,11 @@ function createThing(x, y, typ)
     thing.body = love.physics.newBody(world, 0, 0, "dynamic")
 
     if typ == "player" then
-        f = 1
-    else
+        f = 2
+    elseif typ == "bubble" then
         f = 0.5
+    else
+        f = 1
     end
     thing.shape = love.physics.newCircleShape(0, 0, 100*f)
     thing.fixture = love.physics.newFixture(thing.body, thing.shape)
@@ -141,6 +143,7 @@ function createThing(x, y, typ)
     thing.body:setPosition(x, y)
 
     thing.typ = typ
+    thing.flip = 1
 
     table.insert(things, thing)
     return thing
@@ -177,13 +180,15 @@ function initGame()
     createThing(math.random(0, 2000), math.random(0, 2000), "player")
     player = things[1]
 
-    for i = 1, 20 do
+    n = 20
+
+    for i = 1, n do
         thing = createThing(math.random(0, 2000), math.random(0, 2000), "red")
-        thing.follow = player
+        thing.follow = things[math.ceil(i/2)]
     end
 
-    for i = 1, 20 do
-        createThing(math.random(0, 2000), math.random(0, 2000), "bubble")
+    for i = 1, n do
+        createThing(math.random(0, 2000)+2000, math.random(0, 2000), "bubble")
     end
 
     walls = {}
@@ -218,13 +223,22 @@ function love.update(dt)
             x1, y1 = thing.follow.body:getPosition()
             x2, y2 = thing.body:getPosition()
             dist = math.sqrt((x1-x2)^2 + (y1-y2)^2)
-            if dist > 600 then
+            if dist > 400 then
                 thing.body:applyForce((x1-x2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
             end
         end
         -- damping
         x, y = thing.body:getLinearVelocity()
         thing.body:applyForce(-10*x, -10*y)
+
+        -- flipping
+        vx = thing.body:getLinearVelocity()
+        if vx >= 200 then
+            thing.flip = 1
+        end
+        if vx <= -200 then
+            thing.flip = -1
+        end
     end
 
     x, y = player.body:getPosition()
@@ -258,6 +272,7 @@ function pickUp(red, bubble)
     if not red.hasOxygen then
         red.hasOxygen = true
         remove(things, bubble)
+        bubble.body:destroy()
     end
 end
 
@@ -277,22 +292,20 @@ function love.draw()
 
     for i, thing in pairs(things) do
         x, y = thing.body:getPosition()
-        vx = thing.body:getLinearVelocity()
-        flip =  vx < 0
         if thing.typ == "player" then
             if thing.hasOxygen then
-                love.graphics.draw(images.bluti, x, y)
+                love.graphics.draw(images.bluti, x, y, 0, 2*thing.flip, 2, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
             else
-                love.graphics.draw(images.blutiempty, x, y)
+                love.graphics.draw(images.blutiempty, x, y, 0, 2*thing.flip, 2, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
             end
         elseif thing.typ == "red" then
             if thing.hasOxygen then
-                love.graphics.draw(images.bluti, x, y, 0, 0.5, 0.5)
+                love.graphics.draw(images.bluti, x, y, 0, thing.flip, 1, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
             else
-                love.graphics.draw(images.blutiempty, x, y, 0, 0.5, 0.5)
+                love.graphics.draw(images.blutiempty, x, y, 0, thing.flip, 1, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
             end
         elseif thing.typ == "bubble" then
-            love.graphics.draw(images.bubble, x, y)
+            love.graphics.draw(images.bubble, x, y, 0, 1, 1, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
         end
     end
 
