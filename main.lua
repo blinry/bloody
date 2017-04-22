@@ -101,7 +101,7 @@ function love.load()
 
     camera = Camera(300, 300)
     camera.smoother = Camera.smooth.damped(3)
-    camera:zoom(0.5)
+    camera:zoom(0.1)
 
     --love.graphics.setFont(fonts.unkempt[fontsize])
     love.graphics.setBackgroundColor(0, 0, 0)
@@ -122,10 +122,12 @@ function createCell(x, y)
 end
 
 function createPath(points)
+    print(points[1][1], points[1][2])
+    print(points[2][1], points[2][2])
     prev = nil
     for i, point in pairs(points) do
         if prev then
-            createWall(prev.x, prev.y, point.x, point.y)
+            createWall(prev[1], prev[2], point[1], point[2])
         end
         prev = point
     end
@@ -158,7 +160,7 @@ function initGame()
 
     parseWorld("level.txt")
     wallipyTiles()
-    --createPath({{x=0, y=0}, {x=4000, y=0}, {x=4000, y=4000}, {x=0, y=4000}, {x=0, y=0}})
+    createPath({{0, 0}, {4000, 0}, {4000, 4000}, {0, 4000}, {0, 0}})
 end
 
 function love.update(dt)
