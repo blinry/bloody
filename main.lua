@@ -33,6 +33,19 @@ function table.slice(tbl, first, last, step)
     return sliced
 end
 
+function remove(tbl, obj)
+    j = nil
+    for i, value in pairs(tbl) do
+        if value == obj then
+            j = i
+        end
+    end
+
+    if j then
+        table.remove(tbl, j)
+    end
+end
+
 -- linear interpolation between a and b, with t between 0 and 1
 function lerp(a, b, t)
     return a + t*(b-a)
@@ -101,7 +114,8 @@ function love.load()
 
     camera = Camera(300, 300)
     camera.smoother = Camera.smooth.damped(3)
-    camera:zoom(1)
+    zoom = 1
+    camera:zoomTo(zoom)
 
     --love.graphics.setFont(fonts.unkempt[fontsize])
     love.graphics.setBackgroundColor(0, 0, 0)
@@ -109,21 +123,30 @@ function love.load()
     initGame()
 end
 
-function createCell(x, y)
-    cell = {}
-    cell.body = love.physics.newBody(world, 0, 0, "dynamic")
-    cell.shape = love.physics.newCircleShape(0, 0, 100)
-    cell.fixture = love.physics.newFixture(cell.body, cell.shape)
-    cell.body:setInertia(100000)
-    cell.body:setMass(10)
-    cell.fixture:setFriction(0)
-    cell.body:setPosition(x, y)
-    return cell
+function createThing(x, y, typ)
+    thing = {}
+    thing.body = love.physics.newBody(world, 0, 0, "dynamic")
+
+    if typ == "player" then
+        f = 1
+    else
+        f = 0.5
+    end
+    thing.shape = love.physics.newCircleShape(0, 0, 100*f)
+    thing.fixture = love.physics.newFixture(thing.body, thing.shape)
+    thing.fixture:setUserData({typ = typ, object = thing})
+    thing.body:setInertia(100000)
+    thing.body:setMass(1*f)
+    thing.fixture:setFriction(0)
+    thing.body:setPosition(x, y)
+
+    thing.typ = typ
+
+    table.insert(things, thing)
+    return thing
 end
 
 function createPath(points)
-    print(points[1][1], points[1][2])
-    print(points[2][1], points[2][2])
     prev = nil
     for i, point in pairs(points) do
         if prev then
@@ -149,12 +172,19 @@ function createWall(x1, y1, x2, y2)
 end
 
 function initGame()
-    cells = {}
+    things = {}
+
+    createThing(math.random(0, 2000), math.random(0, 2000), "player")
+    player = things[1]
+
     for i = 1, 20 do
-        c = createCell(math.random(0, 1000), math.random(0, 1000))
-        table.insert(cells, c)
+        thing = createThing(math.random(0, 2000), math.random(0, 2000), "red")
+        thing.follow = player
     end
-    player = cells[2]
+
+    for i = 1, 20 do
+        createThing(math.random(0, 2000), math.random(0, 2000), "bubble")
+    end
 
     walls = {}
 
@@ -167,21 +197,34 @@ function love.update(dt)
     Timer.update(dt)
     world:update(dt)
 
-    for i, cell in pairs(cells) do
-        if i%2 == 0 then
-            if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
-                cell.body:applyForce(100000, 0, 0, 0)
-            end
-            if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
-                cell.body:applyForce(-100000, 0, 0, 0)
-            end
-            if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-                cell.body:applyForce(0, -100000, 0, 0)
-            end
-            if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-                cell.body:applyForce(0, 100000, 0, 0)
+    ff = 20000
+
+    if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
+        player.body:applyForce(ff, 0, 0, 0)
+    end
+    if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
+        player.body:applyForce(-ff, 0, 0, 0)
+    end
+    if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
+        player.body:applyForce(0, -ff, 0, 0)
+    end
+    if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
+        player.body:applyForce(0, ff, 0, 0)
+    end
+
+    for i, thing in pairs(things) do
+        -- follow
+        if thing.follow then
+            x1, y1 = thing.follow.body:getPosition()
+            x2, y2 = thing.body:getPosition()
+            dist = math.sqrt((x1-x2)^2 + (y1-y2)^2)
+            if dist > 600 then
+                thing.body:applyForce((x1-x2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
             end
         end
+        -- damping
+        x, y = thing.body:getLinearVelocity()
+        thing.body:applyForce(-10*x, -10*y)
     end
 
     x, y = player.body:getPosition()
@@ -194,7 +237,12 @@ function love.keypressed(key)
         love.window.setFullscreen(false)
         love.timer.sleep(0.1)
         love.event.quit()
+    elseif key == "-" and debug then
+        zoom = zoom/2
+    elseif key == "+" and debug then
+        zoom = zoom*2
     end
+    camera:zoomTo(zoom)
 end
 
 function love.mousepressed(x, y, button, touch)
@@ -206,17 +254,46 @@ function love.mousepressed(x, y, button, touch)
     end
 end
 
-function beginContact(a, b, coll)
+function pickUp(red, bubble)
+    if not red.hasOxygen then
+        red.hasOxygen = true
+        remove(things, bubble)
+    end
+end
 
+function beginContact(a, b, coll)
+    if a:getUserData() and b:getUserData() then
+        if a:getUserData().typ == "bubble" and b:getUserData().typ == "red" then
+            pickUp(b:getUserData().object, a:getUserData().object)
+        elseif a:getUserData().typ == "red" and b:getUserData().typ == "bubble" then
+            pickUp(a:getUserData().object, b:getUserData().object)
+        end
+    end
 end
 
 function love.draw()
     -- draw world
     camera:attach()
 
-    for i, cell in pairs(cells) do
-        x, y = cell.body:getPosition()
-        love.graphics.draw(images.bluti, x, y)
+    for i, thing in pairs(things) do
+        x, y = thing.body:getPosition()
+        vx = thing.body:getLinearVelocity()
+        flip =  vx < 0
+        if thing.typ == "player" then
+            if thing.hasOxygen then
+                love.graphics.draw(images.bluti, x, y)
+            else
+                love.graphics.draw(images.blutiempty, x, y)
+            end
+        elseif thing.typ == "red" then
+            if thing.hasOxygen then
+                love.graphics.draw(images.bluti, x, y, 0, 0.5, 0.5)
+            else
+                love.graphics.draw(images.blutiempty, x, y, 0, 0.5, 0.5)
+            end
+        elseif thing.typ == "bubble" then
+            love.graphics.draw(images.bubble, x, y)
+        end
     end
 
     for i, wall in pairs(walls) do
