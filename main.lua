@@ -159,8 +159,8 @@ function initGame()
     walls = {}
 
     parseWorld("level.txt")
-    wallipyTiles()
-    createPath({{0, 0}, {4000, 0}, {4000, 4000}, {0, 4000}, {0, 0}})
+    wallipyTiles(1000)
+    --createPath({{0, 0}, {4000, 0}, {4000, 4000}, {0, 4000}, {0, 0}})
 end
 
 function love.update(dt)
