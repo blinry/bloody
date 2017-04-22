@@ -78,38 +78,27 @@ end
 -- createPath
 function createSegment(symbol, x, y, tilesize)
   path = {}
-  position = {}
   if symbol == "empty" then
   elseif symbol == "vertical" then
-    position[1] = 0.25 * tilesize + x * tilesize
-    position[2] = 0 * tilesize + y * tilesize
-    table.insert(path, position)
-    position[2] = 1 * tilesize + y * tilesize
-    table.insert(path, position)
+    path = {}
+    table.insert(path, {0.25 * tilesize + x * tilesize, 0 * tilesize + y * tilesize})
+    table.insert(path, {0.25 * tilesize + x * tilesize, 1 * tilesize + y * tilesize})
     createPath(path)
 
     path = {}
-    position[1] = 0.75 * tilesize + x * tilesize
-    position[2] = 0 * tilesize + y * tilesize
-    table.insert(path, position)
-    position[2] = 1 * tilesize + y * tilesize
-    table.insert(path, position)
+    table.insert(path, {0.75 * tilesize + x * tilesize, 0 * tilesize + y * tilesize})
+    table.insert(path, {0.75 * tilesize + x * tilesize, 1 * tilesize + y * tilesize})
     createPath(path)
 
   elseif symbol == "horizontal" then
-    position[2] = 0.25 * tilesize + y * tilesize
-    position[1] = 0 * tilesize + x * tilesize
-    table.insert(path, position)
-    position[1] = 1 * tilesize + x * tilesize
-    table.insert(path, position)
+    path = {}
+    table.insert(path, {0 * tilesize + x * tilesize, 0.25 * tilesize + y * tilesize})
+    table.insert(path, {1 * tilesize + x * tilesize, 0.25 * tilesize + y * tilesize})
     createPath(path)
 
     path = {}
-    position[2] = 0.75 * tilesize + y * tilesize
-    position[1] = 0 * tilesize + x * tilesize
-    table.insert(path, position)
-    position[1] = 1 * tilesize + x * tilesize
-    table.insert(path, position)
+    table.insert(path, {0 * tilesize + x * tilesize, 0.75 * tilesize + y * tilesize})
+    table.insert(path, {1 * tilesize + x * tilesize, 0.75 * tilesize + y * tilesize})
     createPath(path)
     
 
@@ -143,10 +132,10 @@ function createSegment(symbol, x, y, tilesize)
 
 end
 
-function wallipyTiles()
+function wallipyTiles(tilesize)
   for x = 1,150 do
     for y = 1,150 do
-      createSegment( level.veins[x][y], x, y, 100 )
+      createSegment( level.veins[x][y], x, y, tilesize )
     end
   end
 end
