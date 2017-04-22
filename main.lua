@@ -138,7 +138,7 @@ function createThing(x, y, typ)
     thing.fixture = love.physics.newFixture(thing.body, thing.shape)
     thing.fixture:setUserData({typ = typ, object = thing})
     thing.body:setInertia(100000)
-    thing.body:setMass(1*f)
+    thing.body:setMass(1*f^3)
     thing.fixture:setFriction(0)
     thing.body:setPosition(x, y)
 
@@ -177,18 +177,20 @@ end
 function initGame()
     things = {}
 
-    createThing(math.random(0, 2000), math.random(0, 2000), "player")
+    o = 30000
+
+    createThing(math.random(0, 2000)+o, math.random(0, 2000)+o, "player")
     player = things[1]
 
     n = 20
 
     for i = 1, n do
-        thing = createThing(math.random(0, 2000), math.random(0, 2000), "red")
+        thing = createThing(math.random(0, 2000)+o, math.random(0, 2000)+o, "red")
         thing.follow = things[math.ceil(i/2)]
     end
 
     for i = 1, n do
-        createThing(math.random(0, 2000)+2000, math.random(0, 2000), "bubble")
+        createThing(math.random(0, 2000)+2000+o, math.random(0, 2000)+o, "bubble")
     end
 
     walls = {}
@@ -202,19 +204,20 @@ function love.update(dt)
     Timer.update(dt)
     world:update(dt)
 
-    ff = 20000
+    ff = 100000
+    ff2 = 100000
 
     if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
-        player.body:applyForce(ff, 0, 0, 0)
+        player.body:applyForce(ff2, 0, 0, 0)
     end
     if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
-        player.body:applyForce(-ff, 0, 0, 0)
+        player.body:applyForce(-ff2, 0, 0, 0)
     end
     if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-        player.body:applyForce(0, -ff, 0, 0)
+        player.body:applyForce(0, -ff2, 0, 0)
     end
     if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-        player.body:applyForce(0, ff, 0, 0)
+        player.body:applyForce(0, ff2, 0, 0)
     end
 
     for i, thing in pairs(things) do
@@ -309,9 +312,14 @@ function love.draw()
         end
     end
 
+    love.graphics.setLineWidth(50)
+    love.graphics.setColor(200, 0, 0)
+
     for i, wall in pairs(walls) do
         love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
     end
+
+    love.graphics.setColor(255, 255, 255)
 
     camera:detach()
 
