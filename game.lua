@@ -20,18 +20,18 @@ function parseWorld(filename)
     legend["L"] = "lung"
     legend["B"] = "brain"
 
-    local world = {}
-    world.veins = {}
-    world.name = string.match(string.match(filename, "[^/]+.txt"), "[^/.]+"):sub(4):gsub("_", " ")
-    world.solved = false
-    world.story = {}
-    world.won = {}
+    level = {}
+    level.veins = {}
+    level.name = string.match(string.match(filename, "[^/]+.txt"), "[^/.]+"):sub(4):gsub("_", " ")
+    level.solved = false
+    level.story = {}
+    level.won = {}
 
     for i = 1,151 do
-        world.veins[i] = {}
+        level.veins[i] = {}
 
         for j = 1,151 do
-            world.veins[i][j] = "empty"
+            level.veins[i][j] = "empty"
         end
     end
 
@@ -51,7 +51,7 @@ function parseWorld(filename)
             else
                 for i = 1, #line, 1 do
                   local c = line:sub(i,i)
-                  world.veins[i][lineNr] = legend[c]
+                  level.veins[i][lineNr] = legend[c]
                 end
                 lineNr = lineNr+1
             end
@@ -83,33 +83,33 @@ function createSegment(symbol, x, y, tilesize)
   elseif symbol == "vertical" then
     position[1] = 0.25 * tilesize + x * tilesize
     position[2] = 0 * tilesize + y * tilesize
-    path.insert(position)
+    table.insert(path, position)
     position[2] = 1 * tilesize + y * tilesize
-    path.insert(position)
+    table.insert(path, position)
     createPath(path)
 
     path = {}
     position[1] = 0.75 * tilesize + x * tilesize
     position[2] = 0 * tilesize + y * tilesize
-    path.insert(position)
+    table.insert(path, position)
     position[2] = 1 * tilesize + y * tilesize
-    path.insert(position)
+    table.insert(path, position)
     createPath(path)
 
   elseif symbol == "horizontal" then
     position[2] = 0.25 * tilesize + y * tilesize
     position[1] = 0 * tilesize + x * tilesize
-    path.insert(position)
+    table.insert(path, position)
     position[1] = 1 * tilesize + x * tilesize
-    path.insert(position)
+    table.insert(path, position)
     createPath(path)
 
     path = {}
     position[2] = 0.75 * tilesize + y * tilesize
     position[1] = 0 * tilesize + x * tilesize
-    path.insert(position)
+    table.insert(path, position)
     position[1] = 1 * tilesize + x * tilesize
-    path.insert(position)
+    table.insert(path, position)
     createPath(path)
     
 
@@ -146,7 +146,7 @@ end
 function wallipyTiles()
   for x = 1,150 do
     for y = 1,150 do
-      createSegment( world.veins[x][y], x, y, 100 )
+      createSegment( level.veins[x][y], x, y, 100 )
     end
   end
 end
