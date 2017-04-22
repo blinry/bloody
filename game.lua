@@ -80,13 +80,13 @@ function createCirclePath(x, y, radius, points, startangle, endangle)
 
   local stepsize = (endangle - startangle) / (points-1)
 
-  table.insert(path, {(x + math.cos(startangle) * radius), (y + math.sin(startangle) * radius)})
+  table.insert(path, {(x + math.cos(startangle) * radius), (y - math.sin(startangle) * radius)})
 
   for i = 1,(points-2) do
-    table.insert(path, {(x+math.cos(startangle + i * stepsize)*radius), (y+math.sin(startangle+i*stepsize)*radius)})
+    table.insert(path, {(x+math.cos(startangle + i * stepsize)*radius), (y-math.sin(startangle+i*stepsize)*radius)})
   end
 
-  table.insert(path, {(x + math.cos(endangle) * radius), (y + math.sin(endangle) * radius)})
+  table.insert(path, {(x + math.cos(endangle) * radius), (y - math.sin(endangle) * radius)})
   createPath(path)
 end
 
