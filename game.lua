@@ -17,7 +17,7 @@ function parseWorld(filename)
     level = {}
     level.tiles = {}
 
-    for i = 1,15 do
+    for i = 1,30 do
         level.tiles[i] = {}
 
         for j = 1,50 do
@@ -30,11 +30,60 @@ function parseWorld(filename)
 
     local lineNr = 1
 
+    signs = {}
+    local phase = 1
     for line in f:lines() do
-        for i = 1, #line, 1 do
-          local c = line:sub(i,i)
-          level.tiles[i][lineNr].typ = legend[c]
+        if phase == 1 then
+            if line == "---" then
+                phase = 2
+            else
+                for i = 1, #line, 1 do
+                    local c = line:sub(i,i)
+                    if string.match(c, "[a-uw-z]") then
+                        signs[c] = {pos = {i, lineNr}}
+                    else
+                        level.tiles[i][lineNr].typ = legend[c]
+                    end
+                end
+            end
+        else
+            local c = line:sub(1,1)
+            local offset = line:sub(2,2)
+
+            signs[c].ox = 0
+            signs[c].oy = 0
+
+            o = 1200
+
+            if offset == "<" then
+                signs[c].ox = -o
+            end
+            if offset == ">" then
+                signs[c].ox = o
+            end
+            if offset == "v" then
+                signs[c].oy = o
+            end
+            if offset == "^" then
+                signs[c].oy = -o
+            end
+
+            words = {}
+            for w in line:gmatch("%S+") do
+                dir = w:sub(1,1)
+                text = w:sub(2)
+                if dir == "<" then
+                    signs[c].left = text
+                elseif dir == ">" then
+                    signs[c].right = text
+                elseif dir == "^" then
+                    signs[c].up = text
+                elseif dir == "v" then
+                    signs[c].down = text
+                end
+            end
         end
+
         lineNr = lineNr+1
     end
 end

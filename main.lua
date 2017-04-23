@@ -487,6 +487,42 @@ function love.draw()
             end
         end
 
+        love.graphics.setNewFont(150)
+        for i, sign in pairs(signs) do
+            if sign.ox then
+                sx = (sign.pos[1]+0.5)*tilesize+sign.ox
+                sy = (sign.pos[2]+0.5)*tilesize+sign.oy
+                l = tilesize/2
+                o = tilesize/8
+
+                if sign.left then
+                    love.graphics.draw(images.sign, sx, sy, math.pi, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.left, sx-l-o, sy, l, "right")
+                    love.graphics.setColor(255, 255, 255)
+                end
+                if sign.right then
+                    love.graphics.draw(images.sign, sx, sy, 0, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.right, sx+o, sy, l, "left")
+                    love.graphics.setColor(255, 255, 255)
+                end
+                if sign.up then
+                    love.graphics.draw(images.sign, sx, sy, math.pi/2*3, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.up, sx, sy-l-o, l, "right", math.pi/2)
+                    love.graphics.setColor(255, 255, 255)
+                end
+                if sign.down then
+                    love.graphics.draw(images.sign, sx, sy, math.pi/2, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.down, sx, sy+o, l, "left", math.pi/2)
+                    love.graphics.setColor(255, 255, 255)
+                end
+            end
+        end
+
+
         --love.graphics.setLineWidth(50)
         --love.graphics.setColor(200, 0, 0)
 
@@ -502,6 +538,8 @@ function love.draw()
         for i, quest in pairs(quests) do
           quest:draw()
         end
+
+        love.graphics.setNewFont(50)
 
         x, y = player.body:getPosition()
         organ = getOrgan(x, y)
