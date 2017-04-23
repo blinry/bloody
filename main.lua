@@ -471,6 +471,11 @@ function love.draw()
       love.graphics.setColor(255,255,255)
       love.graphics.draw(images.title, 0, 0)
 
+      if love.timer.getTime() - blink_timer > 0.5 then
+        blink_timer = love.timer.getTime()
+        blink = not blink
+      end
+
       camera:attach()
       x,y = camera:worldCoords(0,0)
 
@@ -492,7 +497,17 @@ function love.draw()
       love.graphics.setColor(255,255,255)
       width, height = love.graphics.getDimensions()
       love.graphics.setFont(title_font)
-      love.graphics.printf("A Bloody Small World!", 0, height/4, width, "center")
+      love.graphics.printf("A Bloody Small World!", 0, 100, width, "center")
+
+      love.graphics.setFont(subtitle_font)
+      love.graphics.printf("made in 48 hours for Ludum Dare 38", 0, height/2-50, width, "center")
+      love.graphics.printf("by A, B, C", 0, height/2+50, width, "center")
+
+      if blink then
+        love.graphics.setColor(175, 175, 236)
+        love.graphics.setFont(love.graphics.newFont(25))
+        love.graphics.printf("Press <Enter> to start!", 0, height - 75, width, "center")
+      end
 
     elseif mode == "menu" then
     end
