@@ -116,7 +116,7 @@ function love.load()
 
     camera = Camera(30000, 30000)
     camera.smoother = Camera.smooth.damped(3)
-    zoom = 0.5
+    zoom = 0.25
     camera:zoomTo(zoom)
 
     love.graphics.setFont(fonts.unkempt[fontsize])
@@ -136,7 +136,7 @@ function createThing(x, y, typ, this_world)
         f = 0.5
     else
         f = 1
-        thing.hasOxygen = true
+        --thing.hasOxygen = true
     end
     thing.shape = love.physics.newCircleShape(0, 0, 100*f)
     thing.fixture = love.physics.newFixture(thing.body, thing.shape)
@@ -189,7 +189,7 @@ function initGame()
     organs["S"] = {name = "Stomach"}
     organs["F"] = {name = "Feet"}
     organs["C"] = {name = "Colon"}
-    --organs["H"] = {name = "Heart"}
+    organs["H"] = {name = "Heart", immune = true}
 
     tilesize = 3000
     parseWorld("level.txt")
@@ -209,7 +209,7 @@ function initGame()
     end
 
     for name, organ in pairs(organs) do
-        organ.deadline = love.timer.getTime() + math.random(60,100)
+        organ.deadline = love.timer.getTime() + math.random(120,240)
     end
 
     --for i = 1, n do
@@ -272,9 +272,9 @@ function love.update(dt)
             if thing.typ == "red" and thing.hasOxygen then
                 x, y = thing.body:getPosition()
                 organ = getOrgan(x, y)
-                if organ then
+                if organ and not organ.immune then
                     thing.hasOxygen = false
-                    organ.deadline = organ.deadline + 10
+                    organ.deadline = organ.deadline + 30
                 end
             end
         end
@@ -461,17 +461,19 @@ function love.draw()
 
         y = 100
         for symbol, organ in pairs(organs) do
-            now = love.timer.getTime()
-            remaining = math.ceil(organ.deadline-now)
-            if remaining < 10 then
-                love.graphics.setColor(255, 0, 0)
-            elseif remaining < 30 then
-                love.graphics.setColor(255, 255, 0)
-            else
-                love.graphics.setColor(255, 255, 255)
+            if not organ.immune then
+                now = love.timer.getTime()
+                remaining = math.ceil(organ.deadline-now)
+                if remaining < 10 then
+                    love.graphics.setColor(255, 0, 0)
+                elseif remaining < 30 then
+                    love.graphics.setColor(255, 255, 0)
+                else
+                    love.graphics.setColor(255, 255, 255)
+                end
+                love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
+                y = y+100
             end
-            love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
-            y = y+100
         end
 
     elseif mode == "title" then
