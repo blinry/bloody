@@ -98,8 +98,6 @@ function love.load()
         sounds[filename:sub(1,-5)] = love.audio.newSource("sounds/"..filename, "static")
     end
 
-    sounds.pick_up_oxygen:setVolume(.5)
-
     music = {}
     for i,filename in pairs(love.filesystem.getDirectoryItems("music")) do
         music[filename:sub(1,-5)] = love.audio.newSource("music/"..filename)
@@ -240,6 +238,7 @@ function initGame()
     --end
 
     intro_music = music.intro:play()
+    sounds.pick_up_oxygen:setVolume(.2)
 end
 
 function love.update(dt)
@@ -415,6 +414,7 @@ function love.keypressed(key)
         intro_music:stop()
         game_music = music.party:play()
         heart_beat = music.heart_beat:play()
+        sounds.pick_up_oxygen:setVolume(.5)
     end
 
     for i, quest in pairs(quests) do
