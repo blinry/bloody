@@ -198,7 +198,7 @@ function initGame()
     organs["S"] = {name = "Stomach"}
     organs["F"] = {name = "Feet"}
     organs["C"] = {name = "Colon"}
-    organs["H"] = {name = "Heart"}
+    --organs["H"] = {name = "Heart"}
 
     for name, organ in pairs(organs) do
         organ.deadline = love.timer.getTime() + math.random(60,100)
