@@ -114,7 +114,7 @@ function love.load()
     world = love.physics.newWorld(0, 0, true)
     world:setCallbacks(beginContact)
 
-    camera = Camera(300, 300)
+    camera = Camera(30000, 30000)
     camera.smoother = Camera.smooth.damped(3)
     zoom = 0.5
     camera:zoomTo(zoom)
@@ -190,6 +190,7 @@ function initGame()
 
     player = createThing(startX, startY, "player", world)
     table.insert(things, player)
+    x, y = player.body:getPosition()
 
     offset = #things
     n = 20
@@ -286,10 +287,21 @@ function love.update(dt)
             end
         end
 
-
+        cx, cy = camera:position()
         x, y = player.body:getPosition()
+        dx, dy = player.body:getLinearVelocity()
+        tx = x+dx*0.7
+        ty = y+dy*0.7
+        lx = cx + 2*dt*(tx-cx)
+        ly = cy + 2*dt*(ty-cy)
+        camera:lookAt(lx, ly)
 
-        camera:lookAt(x, y)
+        speedX, speedY = player.body:getLinearVelocity()
+        speed = math.sqrt(speedX^2 + speedY^2)
+        targetzoom = zoom/(1+range(speed, 0, 20000))
+        z = lerp(camera.scale, targetzoom, dt)
+        camera:zoomTo(z)
+
 
     elseif mode == "title" then
         title_world:update(dt)
@@ -357,6 +369,7 @@ function love.keypressed(key)
         mode = "title"
     elseif key == "return" and mode == "title" then
         mode = "game"
+        camera:lookAt(startX, startY)
     end
     camera:zoomTo(zoom)
 end
@@ -466,7 +479,7 @@ function love.draw()
     elseif mode == "title" then
 
       love.graphics.setColor(255,255,255)
-      love.graphics.draw(images.title, 0, 0)
+      love.graphics.draw(images.bg, 0, 0)
 
       camera:attach()
       x,y = camera:worldCoords(0,0)
