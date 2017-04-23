@@ -562,7 +562,22 @@ function love.draw()
         x, y = player.body:getPosition()
         organ = getOrgan(x, y)
         if organ then
-            love.graphics.printf("Current position: "..organ.name, 100, 20, 1000, "left")
+            love.graphics.setColor(0, 0, 0, 150)
+            love.graphics.rectangle("fill", 20, 15, 350, 90, 5)
+            love.graphics.setColor(255, 255, 255)
+
+            if organ.image then
+              love.graphics.rectangle("fill", 30, 25, 10, 10)
+              love.graphics.draw(organ.image, 30, 25, 0, 0.035)
+            end
+
+            current_font = love.graphics.getFont()
+            
+            love.graphics.setFont(love.graphics.newFont(18))
+            love.graphics.printf("Current position", 110, 20, 1000, "left")
+
+            love.graphics.setFont(current_font)
+            love.graphics.printf(organ.name, 110, 40, 1000, "left")
         end
 
         min_remaining_oxygen = math.huge
