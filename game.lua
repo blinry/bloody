@@ -258,7 +258,11 @@ function wallipyTiles()
 
           --createSegment( level.tiles[x][y], x, y, tilesize )
       else
-          level.tiles[x][y].image = images.leerfeld
+          if math.random(1,2) == 1 then
+              level.tiles[x][y].image = images.leerfeld
+          else
+              level.tiles[x][y].image = images.leerfeld_var2
+          end
           level.tiles[x][y].rot = math.pi/2*math.random(0,3)
       end
 
