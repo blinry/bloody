@@ -303,7 +303,7 @@ function love.update(dt)
         camera:zoomTo(z)
 
 
-    elseif mode == "title" then
+    elseif mode == "title" or mode == "gameover" then
         title_world:update(dt)
 
           
@@ -463,7 +463,9 @@ function love.draw()
         for symbol, organ in pairs(organs) do
             now = love.timer.getTime()
             remaining = math.ceil(organ.deadline-now)
-            if remaining < 10 then
+            if remaining < 0 then
+                mode = "gameover"
+            elseif remaining < 10 then
                 love.graphics.setColor(255, 0, 0)
             elseif remaining < 30 then
                 love.graphics.setColor(255, 255, 0)
@@ -474,7 +476,7 @@ function love.draw()
             y = y+100
         end
 
-    elseif mode == "title" then
+    elseif mode == "title"  or mode == "gameover" then
 
       love.graphics.setColor(255,255,255)
       love.graphics.draw(images.bg, 0, 0)
@@ -502,19 +504,21 @@ function love.draw()
 
       camera:detach()
 
-      love.graphics.setColor(255,255,255)
-      width, height = love.graphics.getDimensions()
-      love.graphics.setFont(title_font)
-      love.graphics.printf("A Bloody Small World!", 0, 100, width, "center")
+      if mode == "title" then
+        love.graphics.setColor(255,255,255)
+        width, height = love.graphics.getDimensions()
+        love.graphics.setFont(title_font)
+        love.graphics.printf("A Bloody Small World!", 0, 100, width, "center")
 
-      love.graphics.setFont(subtitle_font)
-      love.graphics.printf("made in 48 hours for Ludum Dare 38", 0, height/2-50, width, "center")
-      love.graphics.printf("by A, B, C", 0, height/2+50, width, "center")
+        love.graphics.setFont(subtitle_font)
+        love.graphics.printf("made in 48 hours for Ludum Dare 38", 0, height/2-50, width, "center")
+        love.graphics.printf("by A, B, C", 0, height/2+50, width, "center")
 
-      if blink then
-        love.graphics.setColor(175, 175, 236)
-        love.graphics.setFont(love.graphics.newFont(25))
-        love.graphics.printf("Press <Enter> to start!", 0, height - 75, width, "center")
+        if blink then
+          love.graphics.setColor(175, 175, 236)
+          love.graphics.setFont(love.graphics.newFont(25))
+          love.graphics.printf("Press <Enter> to start!", 0, height - 75, width, "center")
+        end
       end
 
     elseif mode == "menu" then
