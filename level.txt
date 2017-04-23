@@ -5,16 +5,18 @@
         BB
    v<<<<<^<<<<<<
    v           ^
-   v  >>>>>>v  ^
-   v  ^ ^   v  ^
-   v  ^ ^   v  ^
-   v  O O   v  ^
-   v  ^l^   v  ^
-   v  ^#^   v  ^
+   v    >>>>v  ^
+   v  >>^   v  ^
+   v  OO    v  ^
+   v  OO    v  ^
+   v  @^    v  ^
+   v >^^<<  v  ^
+   v ^ l ^  v  ^
+   v ^<#>^  v  ^
    v   ^    v  ^
    v   ^v<<<<  ^
    v   HH      ^
-  h>>@>HH>>>>>>#b
+  h>>>>HH>>>>>>#b
    ^           v
    ^        SS<#s
    ^        SS v

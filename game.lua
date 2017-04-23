@@ -7,7 +7,7 @@ function parseWorld(filename)
     legend["v"] = "down"
     legend["<"] = "left"
     legend["@"] = "start"
-    legend["O"] = "lung"
+    legend["O"] = "O"
     legend["H"] = "H"
     legend["B"] = "B"
     legend["S"] = "S"
@@ -187,28 +187,36 @@ function wallipyTiles()
           startY = (y+0.5)*tilesize
       end
 
-      if level.tiles[x][y].typ == "B" and brain == nil then
+      if level.tiles[x][y].typ == "B" then
           if not organs["B"].pos then
               organs["B"].pos = {x, y}
               organs["B"].image = images.Gehirn
           end
       end
 
-      if level.tiles[x][y].typ == "H" and brain == nil then
+      if level.tiles[x][y].typ == "H" then
           if not organs["H"].pos then
               organs["H"].pos = {x, y}
               organs["H"].image = images.herz
           end
       end
-
-      if level.tiles[x][y].typ == "lung" then
-          --for i = 1,50 do
-          --    bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
-          --    table.insert(things, bub)
-          --end
-          oxy = createThing((x+0.5)*tilesize, (y+0.5)*tilesize, "oxystation", world)
-          table.insert(things, oxy)
+      if level.tiles[x][y].typ == "O" then
+          if not organs["O"].pos then
+              organs["O"].pos = {x, y}
+              organs["O"].image = images.lunge_groß
+              oxy = createThing((x+1)*tilesize, (y+1)*tilesize, "oxystation", world)
+              table.insert(things, oxy)
+          end
       end
+
+      --if level.tiles[x][y].typ == "lung" then
+      --    --for i = 1,50 do
+      --    --    bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
+      --    --    table.insert(things, bub)
+      --    --end
+      --    oxy = createThing((x+0.5)*tilesize, (y+0.5)*tilesize, "oxystation", world)
+      --    table.insert(things, oxy)
+      --end
 
       if level.tiles[x][y].typ ~= "empty" then
           l = isNotDirOrEmpty(level.tiles[x-1][y].typ) or level.tiles[x-1][y].typ == "right" or level.tiles[x][y].typ == "left" or (isNotDirOrEmpty(level.tiles[x][y].typ) and level.tiles[x-1][y].typ ~= "empty")

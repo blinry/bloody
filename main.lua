@@ -150,7 +150,7 @@ function createThing(x, y, typ, this_world)
         --thing.fixture = love.physics.newFixture(thing.body, thing.shape)
         --thing.body:setInertia(100000)
         --thing.body:setMass(1*f^3)
-        thing.body:setPosition(x+600, y+300)
+        thing.body:setPosition(x, y)
     else
         thing.body = love.physics.newBody(this_world, 0, 0, "dynamic")
         thing.shape = love.physics.newCircleShape(0, 0, 100*f)
@@ -211,6 +211,7 @@ function initGame()
     organs["F"] = {name = "Feet"}
     organs["C"] = {name = "Colon"}
     organs["H"] = {name = "Heart", immune = true}
+    organs["O"] = {name = "Lung", immune = true}
 
     tilesize = 3000
     parseWorld("level.txt")
@@ -494,8 +495,8 @@ function love.draw()
             elseif thing.typ == "oxystation" then
                 t = love.timer.getTime()
                 dy = math.sin(t*4)*100
-                love.graphics.draw(images.lunge, x+1200, y-100+dy, 0, -f*3, f*3, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
-                love.graphics.draw(images.Eiswagen, x, y, 0, f*2, f*2, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+                love.graphics.draw(images.lunge, x+200, y+dy-300, 0, -f*3, f*3, images.lunge:getWidth()/2, images.lunge:getHeight()/2)
+                love.graphics.draw(images.Eiswagen, x-300, y, 0, f*2, f*2, images.Eiswagen:getWidth()/2, images.Eiswagen:getHeight()/2)
             end
         end
 
