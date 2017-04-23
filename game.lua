@@ -137,7 +137,7 @@ function wallipyTiles()
 
       if level.veins[x][y] == "lung" then
           for i = 1,50 do
-              createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble")
+              createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
           end
       end
 
