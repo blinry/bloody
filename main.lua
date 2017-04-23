@@ -117,7 +117,7 @@ function love.load()
 
     camera = Camera(30000, 30000)
     camera.smoother = Camera.smooth.damped(3)
-    zoom = 0.5
+    zoom = 0.25
     camera:zoomTo(zoom)
 
     love.graphics.setFont(fonts.unkempt[fontsize])
@@ -129,7 +129,6 @@ end
 
 function createThing(x, y, typ, this_world)
     thing = {}
-    thing.body = love.physics.newBody(this_world, 0, 0, "dynamic")
 
     if typ == "player" then
         f = 2
@@ -137,15 +136,26 @@ function createThing(x, y, typ, this_world)
         f = 0.5
     else
         f = 1
-        thing.hasOxygen = true
+        --thing.hasOxygen = true
     end
-    thing.shape = love.physics.newCircleShape(0, 0, 100*f)
-    thing.fixture = love.physics.newFixture(thing.body, thing.shape)
-    thing.fixture:setUserData({typ = typ, object = thing})
-    thing.body:setInertia(100000)
-    thing.body:setMass(1*f^3)
-    thing.fixture:setFriction(0)
-    thing.body:setPosition(x, y)
+
+    if typ == "oxystation" then
+        thing.body = love.physics.newBody(this_world, 0, 0)
+        --thing.shape = love.physics.newRectangleShape(200, 200, 600, 600)
+        --thing.fixture = love.physics.newFixture(thing.body, thing.shape)
+        --thing.body:setInertia(100000)
+        --thing.body:setMass(1*f^3)
+        thing.body:setPosition(x+600, y+300)
+    else
+        thing.body = love.physics.newBody(this_world, 0, 0, "dynamic")
+        thing.shape = love.physics.newCircleShape(0, 0, 100*f)
+        thing.fixture = love.physics.newFixture(thing.body, thing.shape)
+        thing.fixture:setUserData({typ = typ, object = thing})
+        thing.body:setInertia(100000)
+        thing.body:setMass(1*f^3)
+        thing.fixture:setFriction(0)
+        thing.body:setPosition(x, y)
+    end
 
     thing.typ = typ
     thing.flip = 1
@@ -195,7 +205,7 @@ function initGame()
     organs["S"] = {name = "Stomach"}
     organs["F"] = {name = "Feet"}
     organs["C"] = {name = "Colon"}
-    --organs["H"] = {name = "Heart"}
+    organs["H"] = {name = "Heart", immune = true}
 
     tilesize = 3000
     parseWorld("level.txt")
@@ -215,7 +225,7 @@ function initGame()
     end
 
     for name, organ in pairs(organs) do
-        organ.deadline = love.timer.getTime() + math.random(60,100)
+        organ.deadline = love.timer.getTime() + math.random(120,240)
         organ.alive = true
     end
 
@@ -257,31 +267,46 @@ function love.update(dt)
                 end
             end
 
-            -- damping
-            x, y = thing.body:getLinearVelocity()
-            thing.body:applyForce(-10*x, -10*y)
+            if thing.body then
+                -- damping
+                x, y = thing.body:getLinearVelocity()
+                thing.body:applyForce(-10*x, -10*y)
 
-            -- streaming
-            x, y = thing.body:getPosition()
-            fx, fy = getStream(x, y)
-            thing.body:applyForce(fx, fy)
+                -- streaming
+                x, y = thing.body:getPosition()
+                fx, fy = getStream(x, y)
+                thing.body:applyForce(fx, fy)
 
-            -- flipping
-            vx = thing.body:getLinearVelocity()
-            if vx >= 200 then
-                thing.flip = 1
-            end
-            if vx <= -200 then
-                thing.flip = -1
+                -- flipping
+                vx = thing.body:getLinearVelocity()
+                if vx >= 200 then
+                    thing.flip = 1
+                end
+                if vx <= -200 then
+                    thing.flip = -1
+                end
             end
 
             -- bubble popping
             if thing.typ == "red" and thing.hasOxygen then
                 x, y = thing.body:getPosition()
                 organ = getOrgan(x, y)
-                if organ then
+                if organ and not organ.immune then
                     thing.hasOxygen = false
-                    organ.deadline = organ.deadline + 10
+                    organ.deadline = organ.deadline + 30
+                end
+            end
+
+            if thing.typ == "red" and not thing.hasOxygen then
+                for i, thing2 in pairs(things) do
+                    if thing2.typ == "oxystation" then
+                        x, y = thing.body:getPosition()
+                        x2, y2 = thing2.body:getPosition()
+                        dist = math.sqrt((x-x2)^2 + (y-y2)^2)
+                        if dist < 1500 then
+                            thing.hasOxygen = true
+                        end
+                    end
                 end
             end
         end
@@ -313,7 +338,6 @@ function love.update(dt)
     elseif mode == "title" or mode == "gameover" then
         title_world:update(dt)
 
-          
         if #title_bubbles == 0 then
           red = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "red", title_world)
           red.hasOxygen = false
@@ -455,6 +479,11 @@ function love.draw()
                 end
             elseif thing.typ == "bubble" then
                 love.graphics.draw(images.bubble, x, y, 0, f, f, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+            elseif thing.typ == "oxystation" then
+                t = love.timer.getTime()
+                dy = math.sin(t*4)*100
+                love.graphics.draw(images.lunge, x+1200, y-100+dy, 0, -f*3, f*3, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+                love.graphics.draw(images.Eiswagen, x, y, 0, f*2, f*2, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
             end
         end
 
@@ -477,20 +506,22 @@ function love.draw()
 
         y = 100
         for symbol, organ in pairs(organs) do
-            now = love.timer.getTime()
-            remaining = math.ceil(organ.deadline-now)
-            if remaining < 0 then
-                organ.alive = false
-                mode = "gameover"
-            elseif remaining < 10 then
-                love.graphics.setColor(255, 0, 0)
-            elseif remaining < 30 then
-                love.graphics.setColor(255, 255, 0)
-            else
-                love.graphics.setColor(255, 255, 255)
+            if not organ.immune then
+                now = love.timer.getTime()
+                remaining = math.ceil(organ.deadline-now)
+                if remaining < 0 then
+                    organ.alive = false
+                    mode = "gameover"
+                elseif remaining < 10 then
+                    love.graphics.setColor(255, 0, 0)
+                elseif remaining < 30 then
+                    love.graphics.setColor(255, 255, 0)
+                else
+                    love.graphics.setColor(255, 255, 255)
+                end
+                love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
+                y = y+100
             end
-            love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
-            y = y+100
         end
 
     elseif mode == "title"  or mode == "gameover" then

@@ -145,11 +145,20 @@ function wallipyTiles()
           end
       end
 
-      if level.tiles[x][y].typ == "lung" then
-          for i = 1,50 do
-              bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
-              table.insert(things, bub)
+      if level.tiles[x][y].typ == "H" and brain == nil then
+          if not organs["H"].pos then
+              organs["H"].pos = {x, y}
+              organs["H"].image = images.herz
           end
+      end
+
+      if level.tiles[x][y].typ == "lung" then
+          --for i = 1,50 do
+          --    bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
+          --    table.insert(things, bub)
+          --end
+          oxy = createThing((x+0.5)*tilesize, (y+0.5)*tilesize, "oxystation", world)
+          table.insert(things, oxy)
       end
 
       if level.tiles[x][y].typ ~= "empty" then
@@ -232,10 +241,30 @@ function wallipyTiles()
               level.tiles[x][y].image = images.Kurve
               level.tiles[x][y].rot = math.pi*3/2
           end
+          if l and r and b and not t then
+              level.tiles[x][y].image = images.t
+              level.tiles[x][y].rot = 0+math.pi
+          end
+          if l and not r and b and t then
+              level.tiles[x][y].image = images.t
+              level.tiles[x][y].rot = math.pi/2+math.pi
+          end
+          if l and r and not b and t then
+              level.tiles[x][y].image = images.t
+              level.tiles[x][y].rot = math.pi+math.pi
+          end
+          if not l and r and b and t then
+              level.tiles[x][y].image = images.t
+              level.tiles[x][y].rot = math.pi/2*3+math.pi
+          end
 
           --createSegment( level.tiles[x][y], x, y, tilesize )
       else
-          level.tiles[x][y].image = images.leerfeld
+          if math.random(1,2) == 1 then
+              level.tiles[x][y].image = images.leerfeld
+          else
+              level.tiles[x][y].image = images.leerfeld_var2
+          end
           level.tiles[x][y].rot = math.pi/2*math.random(0,3)
       end
 
@@ -274,7 +303,7 @@ function drawLevel()
     end
     for symbol, organ in pairs(organs) do
         if organ.pos then
-            love.graphics.draw(organ.image, organ.pos[1]*tilesize, organ.pos[2]*tilesize, 0, 6, 6)
+            love.graphics.draw(organ.image, organ.pos[1]*tilesize, organ.pos[2]*tilesize, 0, 3, 3)
         end
     end
 end
