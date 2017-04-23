@@ -104,6 +104,9 @@ function love.load()
         music[filename:sub(1,-5)]:setLooping(true)
     end
 
+    music.intro:setVolume(.3)
+    music.party:setVolume(.3)
+
     fontsize = 50
     fonts = {}
     for i,filename in pairs(love.filesystem.getDirectoryItems("fonts")) do
@@ -232,6 +235,8 @@ function initGame()
     --for i = 1, n do
     --    createThing(math.random(0, 2000)+2000, math.random(0, 2000), "bubble")
     --end
+
+    intro_music = music.intro:play()
 end
 
 function love.update(dt)
@@ -294,6 +299,7 @@ function love.update(dt)
                 if organ and not organ.immune then
                     thing.hasOxygen = false
                     organ.deadline = organ.deadline + 30
+                    sounds.drop_oxygen:play()
                 end
             end
 
@@ -402,6 +408,9 @@ function love.keypressed(key)
     elseif key == "return" and mode == "title" then
         mode = "game"
         camera:lookAt(startX, startY)
+        intro_music:stop()
+        game_music = music.party:play()
+        heart_beat = music.heart_beat:play()
     end
 
     for i, quest in pairs(quests) do
@@ -439,7 +448,7 @@ function pickUp(red, bubble)
         red.pickUp = love.timer.getTime()
 
         bubble.body:destroy()
-
+        love.audio.play(sounds.pick_up_oxygen)
     end
 end
 
@@ -555,6 +564,9 @@ function love.draw()
                 if remaining < 0 then
                     organ.alive = false
                     mode = "gameover"
+                    game_music:stop()
+                    heart_beat:stop()
+                    game_over_music = music.blues:play()
                 elseif remaining < 10 then
                     love.graphics.setColor(255, 0, 0)
                 elseif remaining < 30 then
