@@ -153,10 +153,12 @@ function wallipyTiles()
       end
 
       if level.tiles[x][y].typ == "lung" then
-          for i = 1,50 do
-              bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
-              table.insert(things, bub)
-          end
+          --for i = 1,50 do
+          --    bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
+          --    table.insert(things, bub)
+          --end
+          oxy = createThing((x+0.5)*tilesize, (y+0.5)*tilesize, "oxystation", world)
+          table.insert(things, oxy)
       end
 
       if level.tiles[x][y].typ ~= "empty" then

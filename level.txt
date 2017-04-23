@@ -3,16 +3,16 @@
       BB
  v<<<<##<<<<<<
  v           ^
- v >>>>>>>v  ^
- v ^   ^  v  ^
- v OO OO  v  ^
- v OO OO  v  ^
+ v  >>>>>>v  ^
  v  ^ ^   v  ^
+ v  ^ ^   v  ^
+ v  O O   v  ^
+ v  @ ^   v  ^
  v  ^#^   v  ^
  v   ^    v  ^
  v   ^v<<<v  ^
  v   HH      ^
- >>>>@H>>>>>>v
+ >>>>HH>>>>>>v
  ^           v
  ^        SS<#
  ^        SS v

@@ -128,7 +128,6 @@ end
 
 function createThing(x, y, typ, this_world)
     thing = {}
-    thing.body = love.physics.newBody(this_world, 0, 0, "dynamic")
 
     if typ == "player" then
         f = 2
@@ -138,13 +137,24 @@ function createThing(x, y, typ, this_world)
         f = 1
         --thing.hasOxygen = true
     end
-    thing.shape = love.physics.newCircleShape(0, 0, 100*f)
-    thing.fixture = love.physics.newFixture(thing.body, thing.shape)
-    thing.fixture:setUserData({typ = typ, object = thing})
-    thing.body:setInertia(100000)
-    thing.body:setMass(1*f^3)
-    thing.fixture:setFriction(0)
-    thing.body:setPosition(x, y)
+
+    if typ == "oxystation" then
+        thing.body = love.physics.newBody(this_world, 0, 0)
+        --thing.shape = love.physics.newRectangleShape(200, 200, 600, 600)
+        --thing.fixture = love.physics.newFixture(thing.body, thing.shape)
+        --thing.body:setInertia(100000)
+        --thing.body:setMass(1*f^3)
+        thing.body:setPosition(x+600, y+300)
+    else
+        thing.body = love.physics.newBody(this_world, 0, 0, "dynamic")
+        thing.shape = love.physics.newCircleShape(0, 0, 100*f)
+        thing.fixture = love.physics.newFixture(thing.body, thing.shape)
+        thing.fixture:setUserData({typ = typ, object = thing})
+        thing.body:setInertia(100000)
+        thing.body:setMass(1*f^3)
+        thing.fixture:setFriction(0)
+        thing.body:setPosition(x, y)
+    end
 
     thing.typ = typ
     thing.flip = 1
@@ -251,22 +261,24 @@ function love.update(dt)
                 end
             end
 
-            -- damping
-            x, y = thing.body:getLinearVelocity()
-            thing.body:applyForce(-10*x, -10*y)
+            if thing.body then
+                -- damping
+                x, y = thing.body:getLinearVelocity()
+                thing.body:applyForce(-10*x, -10*y)
 
-            -- streaming
-            x, y = thing.body:getPosition()
-            fx, fy = getStream(x, y)
-            thing.body:applyForce(fx, fy)
+                -- streaming
+                x, y = thing.body:getPosition()
+                fx, fy = getStream(x, y)
+                thing.body:applyForce(fx, fy)
 
-            -- flipping
-            vx = thing.body:getLinearVelocity()
-            if vx >= 200 then
-                thing.flip = 1
-            end
-            if vx <= -200 then
-                thing.flip = -1
+                -- flipping
+                vx = thing.body:getLinearVelocity()
+                if vx >= 200 then
+                    thing.flip = 1
+                end
+                if vx <= -200 then
+                    thing.flip = -1
+                end
             end
 
             -- bubble popping
@@ -276,6 +288,19 @@ function love.update(dt)
                 if organ and not organ.immune then
                     thing.hasOxygen = false
                     organ.deadline = organ.deadline + 30
+                end
+            end
+
+            if thing.typ == "red" and not thing.hasOxygen then
+                for i, thing2 in pairs(things) do
+                    if thing2.typ == "oxystation" then
+                        x, y = thing.body:getPosition()
+                        x2, y2 = thing2.body:getPosition()
+                        dist = math.sqrt((x-x2)^2 + (y-y2)^2)
+                        if dist < 1500 then
+                            thing.hasOxygen = true
+                        end
+                    end
                 end
             end
         end
@@ -444,6 +469,11 @@ function love.draw()
                 end
             elseif thing.typ == "bubble" then
                 love.graphics.draw(images.bubble, x, y, 0, f, f, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+            elseif thing.typ == "oxystation" then
+                t = love.timer.getTime()
+                dy = math.sin(t*4)*100
+                love.graphics.draw(images.lunge, x+1200, y-100+dy, 0, -f*3, f*3, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+                love.graphics.draw(images.Eiswagen, x, y, 0, f*2, f*2, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
             end
         end
 
