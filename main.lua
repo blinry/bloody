@@ -181,7 +181,7 @@ function initGame()
     walls = {}
     things = {}
 
-    game_points = 5
+    game_points = 0
     mode = "title"
 
     tilesize = 3000
@@ -294,36 +294,32 @@ function love.update(dt)
     elseif mode == "title" then
         title_world:update(dt)
 
-        if #title_bubbles < 1 then
-          title_bubble_timer = title_bubble_timer - dt
-        end
-
-        if title_bubble_timer <= 0 then
-          title_bubble_timer = math.random(5,10)
-
-          for i, red in pairs(title_bloodies) do
-            red.hasOxygen = false
-          end
           
-          if #title_bubbles == 0 then
-            for i = 1, (game_points+1) do
-              bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
-              table.insert(title_bubbles, bub)
-            end
-          end
+        if #title_bubbles == 0 then
+          red = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "red", title_world)
+          red.hasOxygen = false
+          table.insert(title_bloodies,red)
+
+          bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
+          table.insert(title_bubbles, bub)
         end
 
         for i, red in pairs(title_bloodies) do
-          if red.follow then
+          if not red.hasOxygen and red.follow then
             x1, y1 = red.follow.body:getPosition()
             x2, y2 = red.body:getPosition()
             dist = math.sqrt((x1-x2)^2 + (y1-y2)^2)
             if dist > 100 then
-              red.body:applyForce((x1-2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
+              red.body:applyForce((x1-x2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
             end
           elseif not red.hasOxygen and #title_bubbles > 0 then
             aimFor = math.random(#title_bubbles)
             red.follow = title_bubbles[aimFor]
+          elseif red.hasOxygen and love.timer.getTime() - red.pickUp > math.random(8,20) then
+            bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
+            table.insert(title_bubbles, bub)
+            red.hasOxygen = false
+
           end
           -- damping
           x, y = red.body:getLinearVelocity()
@@ -337,6 +333,11 @@ function love.update(dt)
           if vx <= -200 then
             red.flip = -1
           end
+        end
+        for i,bub in pairs(title_bubbles) do
+          -- damping
+          x, y = bub.body:getLinearVelocity()
+          bub.body:applyForce(-10*x, -10*y)
         end
 
       camera:lookAt(0,0)
@@ -386,6 +387,8 @@ function pickUp(red, bubble)
             red.follow = nil
           end
         end
+
+        red.pickUp = love.timer.getTime()
 
         bubble.body:destroy()
 
@@ -486,6 +489,10 @@ function love.draw()
 
       camera:detach()
 
+      love.graphics.setColor(255,255,255)
+      width, height = love.graphics.getDimensions()
+      love.graphics.setFont(title_font)
+      love.graphics.printf("A Bloody Small World!", 0, height/4, width, "center")
 
     elseif mode == "menu" then
     end

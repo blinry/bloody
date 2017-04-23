@@ -11,9 +11,12 @@ function initTitle()
         bloody = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "red", title_world)
         bloody.hasOxygen = false
         table.insert(title_bloodies, bloody)
+
+        bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
+        table.insert(title_bubbles, bub)
     end
 
-    title_bubble_timer = math.random(0.1, 5)
-    
+    title_font = love.graphics.newFont(150)
+
 end
 
