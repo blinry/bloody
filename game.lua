@@ -15,13 +15,13 @@ function parseWorld(filename)
     legend["F"] = "F"
 
     level = {}
-    level.veins = {}
+    level.tiles = {}
 
-    for i = 1,150 do
-        level.veins[i] = {}
+    for i = 1,15 do
+        level.tiles[i] = {}
 
-        for j = 1,150 do
-            level.veins[i][j] = "empty"
+        for j = 1,50 do
+            level.tiles[i][j] = {typ="empty"}
         end
     end
 
@@ -33,7 +33,7 @@ function parseWorld(filename)
     for line in f:lines() do
         for i = 1, #line, 1 do
           local c = line:sub(i,i)
-          level.veins[i][lineNr] = legend[c]
+          level.tiles[i][lineNr].typ = legend[c]
         end
         lineNr = lineNr+1
     end
@@ -130,31 +130,31 @@ end
 --end
 
 function wallipyTiles()
-  for x = 2,150-1 do
-    for y = 2,150-1 do
+  for x = 2,#level.tiles-1 do
+    for y = 2,#level.tiles[x]-1 do
 
-      if level.veins[x][y] == "start" then
+      if level.tiles[x][y].typ == "start" then
           startX = (x+0.5)*tilesize
           startY = (y+0.5)*tilesize
       end
 
-      if level.veins[x][y] == "lung" then
+      if level.tiles[x][y].typ == "lung" then
           for i = 1,50 do
               bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
               table.insert(things, bub)
           end
       end
 
-      if level.veins[x][y] ~= "empty" then
-          l = level.veins[x-1][y] ~= "empty"
-          r = level.veins[x+1][y] ~= "empty"
-          t = level.veins[x][y-1] ~= "empty"
-          b = level.veins[x][y+1] ~= "empty"
+      if level.tiles[x][y].typ ~= "empty" then
+          l = level.tiles[x-1][y].typ ~= "empty"
+          r = level.tiles[x+1][y].typ ~= "empty"
+          t = level.tiles[x][y-1].typ ~= "empty"
+          b = level.tiles[x][y+1].typ ~= "empty"
 
-          tl = level.veins[x-1][y-1] ~= "empty"
-          tr = level.veins[x+1][y-1] ~= "empty"
-          bl = level.veins[x-1][y+1] ~= "empty"
-          br = level.veins[x+1][y+1] ~= "empty"
+          tl = level.tiles[x-1][y-1].typ ~= "empty"
+          tr = level.tiles[x+1][y-1].typ ~= "empty"
+          bl = level.tiles[x-1][y+1].typ ~= "empty"
+          br = level.tiles[x+1][y+1].typ ~= "empty"
 
           if t and r and not tr then
               createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
@@ -192,7 +192,44 @@ function wallipyTiles()
           if not l and not t then
               createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.75*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
           end
-          --createSegment( level.veins[x][y], x, y, tilesize )
+
+          if t and b and not r and not l then
+              if math.random(1,2) == 1 then
+                  level.tiles[x][y].image = images.Gerade1
+              else
+                  level.tiles[x][y].image = images.Gerade2
+              end
+              level.tiles[x][y].rot = math.pi*math.random(0,1)
+          end
+          if r and l and not t and not b then
+              if math.random(1,2) == 1 then
+                  level.tiles[x][y].image = images.Gerade1
+              else
+                  level.tiles[x][y].image = images.Gerade2
+              end
+              level.tiles[x][y].rot = math.pi/2+math.pi*math.random(0,1)
+          end
+          if t and r and not b and not l and not tr then
+              level.tiles[x][y].image = images.Kurve
+              level.tiles[x][y].rot = 0
+          end
+          if not t and r and b and not l and not br then
+              level.tiles[x][y].image = images.Kurve
+              level.tiles[x][y].rot = math.pi/2
+          end
+          if not t and not r and b and l and not bl then
+              level.tiles[x][y].image = images.Kurve
+              level.tiles[x][y].rot = math.pi
+          end
+          if t and not r and not b and l and not tl then
+              level.tiles[x][y].image = images.Kurve
+              level.tiles[x][y].rot = math.pi*3/2
+          end
+
+          --createSegment( level.tiles[x][y], x, y, tilesize )
+      else
+          level.tiles[x][y].image = images.leerfeld
+          level.tiles[x][y].rot = math.pi/2*math.random(0,3)
       end
 
     end
@@ -201,7 +238,7 @@ end
 
 function getStream(x, y)
     local ff = 40000
-    typ = level.veins[math.floor(x/tilesize)][math.floor(y/tilesize)]
+    typ = level.tiles[math.floor(x/tilesize)][math.floor(y/tilesize)].typ
     if typ == "up" then
         return 0, -ff
     elseif typ == "right" then
@@ -216,6 +253,16 @@ function getStream(x, y)
 end
 
 function getOrgan(x, y)
-    symbol = level.veins[math.floor(x/tilesize)][math.floor(y/tilesize)]
+    symbol = level.tiles[math.floor(x/tilesize)][math.floor(y/tilesize)].typ
     return organs[symbol]
+end
+
+function drawLevel()
+    for x = 1,#level.tiles do
+        for y = 1,#level.tiles[x] do
+            if level.tiles[x][y].image then
+                love.graphics.draw(level.tiles[x][y].image, (x+0.5)*tilesize, (y+0.5)*tilesize, level.tiles[x][y].rot, 3, 3, level.tiles[x][y].image:getWidth()/2, level.tiles[x][y].image:getHeight()/2)
+            end
+        end
+    end
 end
