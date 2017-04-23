@@ -503,6 +503,11 @@ function love.draw()
           quest:draw()
         end
 
+        x, y = player.body:getPosition()
+        organ = getOrgan(x, y)
+        if organ then
+            love.graphics.printf("Current position: "..organ.name, 100, 20, 1000, "left")
+        end
 
         y = 100
         for symbol, organ in pairs(organs) do
