@@ -102,6 +102,7 @@ function love.load()
         music[filename:sub(1,-5)]:setLooping(true)
     end
 
+    fontsize = 50
     fonts = {}
     for i,filename in pairs(love.filesystem.getDirectoryItems("fonts")) do
         fonts[filename:sub(1,-5)] = {}
@@ -117,7 +118,7 @@ function love.load()
     zoom = 0.5
     camera:zoomTo(zoom)
 
-    --love.graphics.setFont(fonts.unkempt[fontsize])
+    love.graphics.setFont(fonts.unkempt[fontsize])
     love.graphics.setBackgroundColor(0, 0, 0)
 
     initGame()
@@ -175,22 +176,31 @@ function createWall(x1, y1, x2, y2)
 end
 
 function initGame()
-    things = {}
     walls = {}
+    things = {}
 
     tilesize = 3000
-
     parseWorld("level2.txt")
     wallipyTiles(tilesize)
 
     player = createThing(startX, startY, "player")
-
     offset = #things
     n = 20
 
     for i = 1, n do
         thing = createThing(startX+math.random(-tilesize/4, tilesize/4), startY+math.random(-tilesize/4, tilesize/4), "red")
         thing.follow = things[math.floor((i)/2+offset)]
+    end
+
+    organs = {}
+    organs["B"] = {name = "Brain"}
+    organs["S"] = {name = "Stomach"}
+    organs["F"] = {name = "Feet"}
+    organs["C"] = {name = "Colon"}
+    organs["H"] = {name = "Heart"}
+
+    for name, organ in pairs(organs) do
+        organ.deadline = love.timer.getTime() + math.random(1,60)
     end
 
     --for i = 1, n do
@@ -248,6 +258,14 @@ function love.update(dt)
         end
     end
 
+    for symbol, organ in pairs(organs) do
+        now = love.timer.getTime()
+        remaining = math.ceil(organ.deadline-now)
+        if remaining <= 0 then
+            -- game over
+        end
+    end
+
     x, y = player.body:getPosition()
 
     camera:lookAt(x, y)
@@ -294,6 +312,8 @@ function beginContact(a, b, coll)
 end
 
 function love.draw()
+    love.graphics.setColor(255, 255, 255)
+
     -- draw world
     camera:attach()
 
@@ -337,4 +357,19 @@ function love.draw()
     camera:detach()
 
     -- draw UI
+
+    y = 100
+    for symbol, organ in pairs(organs) do
+        now = love.timer.getTime()
+        remaining = math.ceil(organ.deadline-now)
+        if remaining < 10 then
+            love.graphics.setColor(255, 0, 0)
+        elseif remaining < 30 then
+            love.graphics.setColor(255, 255, 0)
+        else
+            love.graphics.setColor(255, 255, 255)
+        end
+        love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
+        y = y+100
+    end
 end

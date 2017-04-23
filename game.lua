@@ -6,7 +6,7 @@ function parseWorld(filename)
     legend[">"] = "right"
     legend["v"] = "down"
     legend["<"] = "left"
-    legend["x"] = "start"
+    legend["@"] = "start"
     legend["H"] = "heart"
     legend["L"] = "lung"
     legend["B"] = "brain"
