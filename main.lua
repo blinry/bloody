@@ -114,7 +114,7 @@ function love.load()
     world = love.physics.newWorld(0, 0, true)
     world:setCallbacks(beginContact)
 
-    camera = Camera(300, 300)
+    camera = Camera(30000, 30000)
     camera.smoother = Camera.smooth.damped(3)
     zoom = 0.5
     camera:zoomTo(zoom)
@@ -190,6 +190,7 @@ function initGame()
 
     player = createThing(startX, startY, "player", world)
     table.insert(things, player)
+    x, y = player.body:getPosition()
 
     offset = #things
     n = 20
@@ -205,7 +206,7 @@ function initGame()
     organs["S"] = {name = "Stomach"}
     organs["F"] = {name = "Feet"}
     organs["C"] = {name = "Colon"}
-    organs["H"] = {name = "Heart"}
+    --organs["H"] = {name = "Heart"}
 
     for name, organ in pairs(organs) do
         organ.deadline = love.timer.getTime() + math.random(60,100)
@@ -286,10 +287,21 @@ function love.update(dt)
             end
         end
 
-
+        cx, cy = camera:position()
         x, y = player.body:getPosition()
+        dx, dy = player.body:getLinearVelocity()
+        tx = x+dx*0.7
+        ty = y+dy*0.7
+        lx = cx + 2*dt*(tx-cx)
+        ly = cy + 2*dt*(ty-cy)
+        camera:lookAt(lx, ly)
 
-        camera:lookAt(x, y)
+        speedX, speedY = player.body:getLinearVelocity()
+        speed = math.sqrt(speedX^2 + speedY^2)
+        targetzoom = zoom/(1+range(speed, 0, 20000))
+        z = lerp(camera.scale, targetzoom, dt)
+        camera:zoomTo(z)
+
 
     elseif mode == "title" then
         title_world:update(dt)
@@ -358,6 +370,7 @@ function love.keypressed(key)
         mode = "title"
     elseif key == "return" and mode == "title" then
         mode = "game"
+        camera:lookAt(startX, startY)
     end
     camera:zoomTo(zoom)
 end
@@ -411,42 +424,37 @@ function love.draw()
         -- draw world
         camera:attach()
 
-        x, y = camera:worldCoords(0, 0)
-        xx = math.floor(x/(images.bg:getWidth()*4))
-        yy = math.floor(y/(images.bg:getWidth()*4))
-        for x = xx,xx+3 do
-            for y = yy,yy+3 do
-                love.graphics.draw(images.bg, images.bg:getWidth()*x*4, images.bg:getHeight()*y*4, 0, 4, 4)
-            end
-        end
+        drawLevel()
+
+        f = 0.5
 
         for i, thing in pairs(things) do
             x, y = thing.body:getPosition()
             if thing.typ == "player" then
                 if thing.hasOxygen then
-                    love.graphics.draw(images.bluti, x, y, 0, 2*thing.flip, 2, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
+                    love.graphics.draw(images.bluti, x, y, 0, f*2*thing.flip, f*2, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
                 else
-                    love.graphics.draw(images.blutiempty, x, y, 0, 2*thing.flip, 2, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+                    love.graphics.draw(images.blutiempty, x, y, 0, f*2*thing.flip, f*2, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
                 end
             elseif thing.typ == "red" then
                 if thing.hasOxygen then
-                    love.graphics.draw(images.bluti, x, y, 0, thing.flip, 1, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
+                    love.graphics.draw(images.bluti, x, y, 0, f*thing.flip, f, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
                 else
-                    love.graphics.draw(images.blutiempty, x, y, 0, thing.flip, 1, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+                    love.graphics.draw(images.blutiempty, x, y, 0, f*thing.flip, f, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
                 end
             elseif thing.typ == "bubble" then
-                love.graphics.draw(images.bubble, x, y, 0, 1, 1, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+                love.graphics.draw(images.bubble, x, y, 0, f, f, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
             end
         end
 
-        love.graphics.setLineWidth(50)
-        love.graphics.setColor(200, 0, 0)
+        --love.graphics.setLineWidth(50)
+        --love.graphics.setColor(200, 0, 0)
 
-        for i, wall in pairs(walls) do
-            love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
-        end
+        --for i, wall in pairs(walls) do
+        --    love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
+        --end
 
-        love.graphics.setColor(255, 255, 255)
+        --love.graphics.setColor(255, 255, 255)
 
         camera:detach()
         -- draw UI
@@ -469,7 +477,7 @@ function love.draw()
     elseif mode == "title" then
 
       love.graphics.setColor(255,255,255)
-      love.graphics.draw(images.title, 0, 0)
+      love.graphics.draw(images.bg, 0, 0)
 
       if love.timer.getTime() - blink_timer > 0.5 then
         blink_timer = love.timer.getTime()
