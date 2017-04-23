@@ -114,7 +114,7 @@ function love.load()
 
     camera = Camera(300, 300)
     camera.smoother = Camera.smooth.damped(3)
-    zoom = 1
+    zoom = 0.5
     camera:zoomTo(zoom)
 
     --love.graphics.setFont(fonts.unkempt[fontsize])
@@ -176,36 +176,34 @@ end
 
 function initGame()
     things = {}
+    walls = {}
 
-    o = 30000
+    tilesize = 3000
 
-    createThing(math.random(0, 2000)+o, math.random(0, 2000)+o, "player")
-    player = things[1]
+    parseWorld("level2.txt")
+    wallipyTiles(tilesize)
 
+    player = createThing(startX, startY, "player")
+
+    offset = #things
     n = 20
 
     for i = 1, n do
-        thing = createThing(math.random(0, 2000)+o, math.random(0, 2000)+o, "red")
-        thing.follow = things[math.ceil(i/2)]
+        thing = createThing(startX+math.random(-tilesize/4, tilesize/4), startY+math.random(-tilesize/4, tilesize/4), "red")
+        thing.follow = things[math.floor((i)/2+offset)]
     end
 
-    for i = 1, n do
-        createThing(math.random(0, 2000)+2000+o, math.random(0, 2000)+o, "bubble")
-    end
-
-    walls = {}
-
-    parseWorld("level.txt")
-    wallipyTiles(3000)
-    --createPath({{0, 0}, {4000, 0}, {4000, 4000}, {0, 4000}, {0, 0}})
+    --for i = 1, n do
+    --    createThing(math.random(0, 2000)+2000, math.random(0, 2000), "bubble")
+    --end
 end
 
 function love.update(dt)
     Timer.update(dt)
     world:update(dt)
 
-    ff = 100000
-    ff2 = 100000
+    ff = 50000
+    ff2 = 50000
 
     if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
         player.body:applyForce(ff2, 0, 0, 0)
@@ -292,6 +290,15 @@ end
 function love.draw()
     -- draw world
     camera:attach()
+
+    x, y = camera:worldCoords(0, 0)
+    xx = math.floor(x/(images.bg:getWidth()*4))
+    yy = math.floor(y/(images.bg:getWidth()*4))
+    for x = xx,xx+3 do
+        for y = yy,yy+3 do
+            love.graphics.draw(images.bg, images.bg:getWidth()*x*4, images.bg:getHeight()*y*4, 0, 4, 4)
+        end
+    end
 
     for i, thing in pairs(things) do
         x, y = thing.body:getPosition()

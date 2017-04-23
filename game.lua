@@ -1,36 +1,19 @@
 function parseWorld(filename)
     local legend = {}
     legend[" "] = "empty"
-
-    legend["|"] = "vertical"
-    legend["-"] = "horizontal"
-
-    legend["t"] = "top_right"
-    legend["r"] = "right_bottom"
-    legend["b"] = "bottom_left"
-    legend["l"] = "left_top"
-
-    legend["^"] = "t-cross_top"
-    legend[">"] = "t-cross_right"
-    legend["v"] = "t-cross_bottom"
-    legend["<"] = "t-cross_left"
-    legend["+"] = "cross"
-
+    legend["#"] = "vein"
+    legend["x"] = "start"
     legend["H"] = "heart"
     legend["L"] = "lung"
     legend["B"] = "brain"
 
     level = {}
     level.veins = {}
-    level.name = string.match(string.match(filename, "[^/]+.txt"), "[^/.]+"):sub(4):gsub("_", " ")
-    level.solved = false
-    level.story = {}
-    level.won = {}
 
-    for i = 1,151 do
+    for i = 1,150 do
         level.veins[i] = {}
 
-        for j = 1,151 do
+        for j = 1,150 do
             level.veins[i][j] = "empty"
         end
     end
@@ -39,39 +22,13 @@ function parseWorld(filename)
     f:open("r")
 
     local lineNr = 1
-    local phase = 1
 
     for line in f:lines() do
-        --local line = f:read()
-        --if line == nil then noObjectList() end
-
-        if phase == 1 then
-            if line == "---" then
-                phase = 2
-            else
-                for i = 1, #line, 1 do
-                  local c = line:sub(i,i)
-                  level.veins[i][lineNr] = legend[c]
-                end
-                lineNr = lineNr+1
-            end
-        elseif phase == 2 then
-            if line == "---" or line == nil  then
-                phase = 3
-            else
-            -- feel free to add stuff <3
-            end
-        elseif phase == 3 then
-           if line == nil or line == "---" then
-               phase = 4
-           else
-           end
-        elseif phase == 4 then
-           if line == nil or line == "---" then
-               break
-           else
-           end
+        for i = 1, #line, 1 do
+          local c = line:sub(i,i)
+          level.veins[i][lineNr] = legend[c]
         end
+        lineNr = lineNr+1
     end
 end
 
@@ -98,78 +55,138 @@ function createLine(startx, starty, endx, endy)
   createPath(path)
 end
 
-function createSegment(symbol, x, y, tilesize, roundpoints)
-  local path = {}
-  if symbol == "empty" then
-  elseif symbol == "vertical" then
-    createLine((0.25+x) * tilesize, (0+y) * tilesize, (0.25+x) * tilesize, (1+y) * tilesize)
-    createLine((0.75+x) * tilesize, (0+y) * tilesize, (0.75+x) * tilesize, (1+y) * tilesize)
-
-  elseif symbol == "horizontal" then
-    createLine((0+x) * tilesize, (0.25+y) * tilesize, (1+x) * tilesize, (0.25+y) * tilesize)
-    createLine((0+x) * tilesize, (0.75+y) * tilesize, (1+x) * tilesize, (0.75+y) * tilesize)
-
-  elseif symbol == "top_right" then
-    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
-    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.75*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
-    
-  elseif symbol == "right_bottom" then
-    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
-    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.75*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
-    
-  elseif symbol == "bottom_left" then
-    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
-    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.75*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
-    
-  elseif symbol == "left_top" then
-    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
-    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.75*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
-
-  elseif symbol == "t-cross_top" then
-    createLine((0+x)*tilesize, (0.75+y)*tilesize, (1+x)*tilesize, (0.75+y)*tilesize)
-
-    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
-    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
-    
-  elseif symbol == "t-cross_right" then
-    createLine((0.25+x)*tilesize, (0+y)*tilesize, (0.25+x)*tilesize, (1+y)*tilesize)
-
-    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, math.pi, 1.5*math.pi)
-    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, math.pi)
-    
-  elseif symbol == "t-cross_bottom" then
-    createLine((0+x) * tilesize, (0.25+y) * tilesize, (1+x) * tilesize, (0.25+y) * tilesize)
-
-    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
-    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
-    
-  elseif symbol == "t-cross_left" then
-    createLine((0.75+x) * tilesize, (0+y) * tilesize, (0.75+x) * tilesize, (1+y) * tilesize)
-
-    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
-    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
-    
-  elseif symbol == "cross" then
-    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
-    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
-    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, math.pi, 1.5*math.pi)
-    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, math.pi)
-
-  elseif symbol == "heart" then
-    
-  elseif symbol == "lung" then
-    
-  elseif symbol == "brain" then
-    
-  end
-
-end
+--function createSegment(symbol, x, y, tilesize, roundpoints)
+--  local path = {}
+--  if symbol == "empty" then
+--  elseif symbol == "vertical" then
+--    createLine((0.25+x) * tilesize, (0+y) * tilesize, (0.25+x) * tilesize, (1+y) * tilesize)
+--    createLine((0.75+x) * tilesize, (0+y) * tilesize, (0.75+x) * tilesize, (1+y) * tilesize)
+--
+--  elseif symbol == "horizontal" then
+--    createLine((0+x) * tilesize, (0.25+y) * tilesize, (1+x) * tilesize, (0.25+y) * tilesize)
+--    createLine((0+x) * tilesize, (0.75+y) * tilesize, (1+x) * tilesize, (0.75+y) * tilesize)
+--
+--  elseif symbol == "top_right" then
+--    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
+--    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.75*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
+--    
+--  elseif symbol == "right_bottom" then
+--    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
+--    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.75*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
+--    
+--  elseif symbol == "bottom_left" then
+--    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
+--    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.75*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
+--    
+--  elseif symbol == "left_top" then
+--    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
+--    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.75*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
+--
+--  elseif symbol == "t-cross_top" then
+--    createLine((0+x)*tilesize, (0.75+y)*tilesize, (1+x)*tilesize, (0.75+y)*tilesize)
+--
+--    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
+--    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
+--    
+--  elseif symbol == "t-cross_right" then
+--    createLine((0.25+x)*tilesize, (0+y)*tilesize, (0.25+x)*tilesize, (1+y)*tilesize)
+--
+--    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, math.pi, 1.5*math.pi)
+--    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, math.pi)
+--    
+--  elseif symbol == "t-cross_bottom" then
+--    createLine((0+x) * tilesize, (0.25+y) * tilesize, (1+x) * tilesize, (0.25+y) * tilesize)
+--
+--    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
+--    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
+--    
+--  elseif symbol == "t-cross_left" then
+--    createLine((0.75+x) * tilesize, (0+y) * tilesize, (0.75+x) * tilesize, (1+y) * tilesize)
+--
+--    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
+--    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
+--    
+--  elseif symbol == "cross" then
+--    createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
+--    createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
+--    createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, math.pi, 1.5*math.pi)
+--    createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, math.pi)
+--
+--  elseif symbol == "heart" then
+--    
+--  elseif symbol == "lung" then
+--    
+--  elseif symbol == "brain" then
+--    
+--  end
+--
+--end
 
 function wallipyTiles(tilesize)
-  for x = 1,150 do
-    for y = 1,150 do
-      createSegment( level.veins[x][y], x, y, tilesize )
+  for x = 2,150-1 do
+    for y = 2,150-1 do
+
+      if level.veins[x][y] == "start" then
+          startX = (x+0.5)*tilesize
+          startY = (y+0.5)*tilesize
+      end
+
+      if level.veins[x][y] == "lung" then
+          for i = 1,50 do
+              createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble")
+          end
+      end
+
+      if level.veins[x][y] ~= "empty" then
+          l = level.veins[x-1][y] ~= "empty"
+          r = level.veins[x+1][y] ~= "empty"
+          t = level.veins[x][y-1] ~= "empty"
+          b = level.veins[x][y+1] ~= "empty"
+
+          tl = level.veins[x-1][y-1] ~= "empty"
+          tr = level.veins[x+1][y-1] ~= "empty"
+          bl = level.veins[x-1][y+1] ~= "empty"
+          br = level.veins[x+1][y+1] ~= "empty"
+
+          if t and r and not tr then
+              createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
+          end
+          if r and b and not br then
+              createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
+          end
+          if b and l and not bl then
+              createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.25*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
+          end
+          if l and t and not tl then
+              createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
+          end
+          if t and b and not r then
+              createLine((0.75+x) * tilesize, (0+y) * tilesize, (0.75+x) * tilesize, (1+y) * tilesize)
+          end
+          if t and b and not l then
+              createLine((0.25+x)*tilesize, (0+y)*tilesize, (0.25+x)*tilesize, (1+y)*tilesize)
+          end
+          if r and l and not t then
+              createLine((0+x) * tilesize, (0.25+y) * tilesize, (1+x) * tilesize, (0.25+y) * tilesize)
+          end
+          if r and l and not b then
+              createLine((0+x)*tilesize, (0.75+y)*tilesize, (1+x)*tilesize, (0.75+y)*tilesize)
+          end
+          if not t and not r then
+              createCirclePath((0+x)*tilesize, (1+y)*tilesize, 0.75*tilesize, 25, 0.0*math.pi, 0.5*math.pi)
+          end
+          if not r and not b then
+              createCirclePath((0+x)*tilesize, (0+y)*tilesize, 0.75*tilesize, 25, 1.5*math.pi, 2.0*math.pi)
+          end
+          if not b and not l then
+              createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.75*tilesize, 25, 1.0*math.pi, 1.5*math.pi)
+          end
+          if not l and not t then
+              createCirclePath((1+x)*tilesize, (1+y)*tilesize, 0.75*tilesize, 25, 0.5*math.pi, 1.0*math.pi)
+          end
+          --createSegment( level.veins[x][y], x, y, tilesize )
+      end
+
     end
   end
 end
-      
