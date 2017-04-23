@@ -2,6 +2,10 @@ function parseWorld(filename)
     local legend = {}
     legend[" "] = "empty"
     legend["#"] = "vein"
+    legend["^"] = "up"
+    legend[">"] = "right"
+    legend["v"] = "down"
+    legend["<"] = "left"
     legend["x"] = "start"
     legend["H"] = "heart"
     legend["L"] = "lung"
@@ -122,7 +126,7 @@ end
 --
 --end
 
-function wallipyTiles(tilesize)
+function wallipyTiles()
   for x = 2,150-1 do
     for y = 2,150-1 do
 
@@ -189,4 +193,20 @@ function wallipyTiles(tilesize)
 
     end
   end
+end
+
+function getStream(x, y)
+    local ff = 40000
+    typ = level.veins[math.floor(x/tilesize)][math.floor(y/tilesize)]
+    if typ == "up" then
+        return 0, -ff
+    elseif typ == "right" then
+        return ff, 0
+    elseif typ == "down" then
+        return 0, ff
+    elseif typ == "left" then
+        return -ff, 0
+    else
+        return 0, 0
+    end
 end

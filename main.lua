@@ -228,9 +228,15 @@ function love.update(dt)
                 thing.body:applyForce((x1-x2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
             end
         end
+
         -- damping
         x, y = thing.body:getLinearVelocity()
         thing.body:applyForce(-10*x, -10*y)
+
+        -- streaming
+        x, y = thing.body:getPosition()
+        fx, fy = getStream(x, y)
+        thing.body:applyForce(fx, fy)
 
         -- flipping
         vx = thing.body:getLinearVelocity()
