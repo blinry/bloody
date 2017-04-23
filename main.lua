@@ -229,11 +229,6 @@ function initGame()
         table.insert(things, thing)
     end
 
-    for name, organ in pairs(organs) do
-        organ.deadline = love.timer.getTime() + math.random(120,240)
-        organ.alive = true
-    end
-
     --for i = 1, n do
     --    createThing(math.random(0, 2000)+2000, math.random(0, 2000), "bubble")
     --end
@@ -413,6 +408,12 @@ function love.keypressed(key)
         mode = "title"
     elseif key == "return" and mode == "title" then
         mode = "game"
+
+        for name, organ in pairs(organs) do
+            organ.deadline = love.timer.getTime() + math.random(120,240)
+            organ.alive = true
+        end
+
         camera:lookAt(startX, startY)
         intro_music:stop()
         game_music = music.party:play()
