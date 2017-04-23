@@ -301,6 +301,7 @@ function love.update(dt)
                 if organ and not organ.immune then
                     thing.hasOxygen = false
                     organ.deadline = organ.deadline + 30
+                    sounds.drop_oxygen:setPitch(math.random(90, 110)/100)
                     sounds.drop_oxygen:play()
                 end
             end
@@ -313,7 +314,8 @@ function love.update(dt)
                         dist = math.sqrt((x-x2)^2 + (y-y2)^2)
                         if dist < 1500 then
                             thing.hasOxygen = true
-                            love.audio.play(sounds.pick_up_oxygen)
+                            sounds.pick_up_oxygen:setPitch(math.random(90, 110)/100)
+                            sounds.pick_up_oxygen:play()
                         end
                     end
                 end
@@ -452,7 +454,8 @@ function pickUp(red, bubble)
         red.pickUp = love.timer.getTime()
 
         bubble.body:destroy()
-        love.audio.play(sounds.pick_up_oxygen)
+        sounds.pick_up_oxygen:setPitch(math.random(90, 110)/100)
+        sounds.pick_up_oxygen:play()
     end
 end
 
