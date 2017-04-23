@@ -104,6 +104,7 @@ function love.load()
         music[filename:sub(1,-5)]:setLooping(true)
     end
 
+    music.blues:setVolume(.3)
     music.intro:setVolume(.3)
     music.party:setVolume(.3)
 
@@ -576,6 +577,7 @@ function love.draw()
                     game_music:stop()
                     heart_beat:stop()
                     game_over_music = music.blues:play()
+                    sounds.pick_up_oxygen:setVolume(.2)
                 elseif remaining < 10 then
                     love.graphics.setColor(255, 0, 0)
                 elseif remaining < 30 then
