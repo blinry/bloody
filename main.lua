@@ -103,6 +103,7 @@ function love.load()
         music[filename:sub(1,-5)]:setLooping(true)
     end
 
+    fontsize = 50
     fonts = {}
     for i,filename in pairs(love.filesystem.getDirectoryItems("fonts")) do
         fonts[filename:sub(1,-5)] = {}
@@ -118,7 +119,7 @@ function love.load()
     zoom = 0.5
     camera:zoomTo(zoom)
 
-    --love.graphics.setFont(fonts.unkempt[fontsize])
+    love.graphics.setFont(fonts.unkempt[fontsize])
     love.graphics.setBackgroundColor(0, 0, 0)
 
     initGame()
@@ -135,6 +136,7 @@ function createThing(x, y, typ, this_world)
         f = 0.5
     else
         f = 1
+        thing.hasOxygen = true
     end
     thing.shape = love.physics.newCircleShape(0, 0, 100*f)
     thing.fixture = love.physics.newFixture(thing.body, thing.shape)
@@ -176,14 +178,13 @@ function createWall(x1, y1, x2, y2)
 end
 
 function initGame()
-    things = {}
     walls = {}
+    things = {}
 
-    game_points = 0
+    game_points = 5
     mode = "title"
 
     tilesize = 3000
-
     parseWorld("level2.txt")
     wallipyTiles(tilesize)
 
@@ -197,6 +198,17 @@ function initGame()
         thing = createThing(startX+math.random(-tilesize/4, tilesize/4), startY+math.random(-tilesize/4, tilesize/4), "red", world)
         thing.follow = things[math.floor((i)/2+offset)]
         table.insert(things, thing)
+    end
+
+    organs = {}
+    organs["B"] = {name = "Brain"}
+    organs["S"] = {name = "Stomach"}
+    organs["F"] = {name = "Feet"}
+    organs["C"] = {name = "Colon"}
+    organs["H"] = {name = "Heart"}
+
+    for name, organ in pairs(organs) do
+        organ.deadline = love.timer.getTime() + math.random(60,100)
     end
 
     --for i = 1, n do
@@ -254,7 +266,26 @@ function love.update(dt)
             if vx <= -200 then
                 thing.flip = -1
             end
+
+            -- bubble popping
+            if thing.typ == "red" and thing.hasOxygen then
+                x, y = thing.body:getPosition()
+                organ = getOrgan(x, y)
+                if organ then
+                    thing.hasOxygen = false
+                    organ.deadline = organ.deadline + 10
+                end
+            end
         end
+
+        for symbol, organ in pairs(organs) do
+            now = love.timer.getTime()
+            remaining = math.ceil(organ.deadline-now)
+            if remaining <= 0 then
+                -- game over
+            end
+        end
+
 
         x, y = player.body:getPosition()
 
@@ -263,12 +294,19 @@ function love.update(dt)
     elseif mode == "title" then
         title_world:update(dt)
 
-        title_bubble_timer = title_bubble_timer - dt
+        if #title_bubbles < 1 then
+          title_bubble_timer = title_bubble_timer - dt
+        end
 
         if title_bubble_timer <= 0 then
-          title_bubble_timer = math.random(0.1, 5)
+          title_bubble_timer = math.random(5,10)
+
+          for i, red in pairs(title_bloodies) do
+            red.hasOxygen = false
+          end
+          
           if #title_bubbles == 0 then
-            for i = 0, game_points do
+            for i = 1, (game_points+1) do
               bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
               table.insert(title_bubbles, bub)
             end
@@ -338,8 +376,15 @@ function pickUp(red, bubble)
         remove(things, bubble)
         remove(title_bubbles, bubble)
 
-        if red.follow == bubble then
-          red.follow = nil
+        for i, thing in pairs(things) do
+          if thing.follow == bubble then
+            thing.follow = nil
+          end
+        end
+        for i, red in pairs(title_bloodies) do
+          if red.follow == bubble then
+            red.follow = nil
+          end
         end
 
         bubble.body:destroy()
@@ -358,6 +403,7 @@ function beginContact(a, b, coll)
 end
 
 function love.draw()
+    love.graphics.setColor(255, 255, 255)
     if mode == "game" then
         -- draw world
         camera:attach()
@@ -400,6 +446,22 @@ function love.draw()
         love.graphics.setColor(255, 255, 255)
 
         camera:detach()
+        -- draw UI
+
+        y = 100
+        for symbol, organ in pairs(organs) do
+            now = love.timer.getTime()
+            remaining = math.ceil(organ.deadline-now)
+            if remaining < 10 then
+                love.graphics.setColor(255, 0, 0)
+            elseif remaining < 30 then
+                love.graphics.setColor(255, 255, 0)
+            else
+                love.graphics.setColor(255, 255, 255)
+            end
+            love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
+            y = y+100
+        end
 
     elseif mode == "title" then
 
@@ -428,5 +490,4 @@ function love.draw()
     elseif mode == "menu" then
     end
 
-    -- draw UI
 end

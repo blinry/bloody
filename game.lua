@@ -6,10 +6,13 @@ function parseWorld(filename)
     legend[">"] = "right"
     legend["v"] = "down"
     legend["<"] = "left"
-    legend["x"] = "start"
-    legend["H"] = "heart"
-    legend["L"] = "lung"
-    legend["B"] = "brain"
+    legend["@"] = "start"
+    legend["O"] = "lung"
+    legend["H"] = "H"
+    legend["B"] = "B"
+    legend["S"] = "S"
+    legend["C"] = "C"
+    legend["F"] = "F"
 
     level = {}
     level.veins = {}
@@ -137,7 +140,8 @@ function wallipyTiles()
 
       if level.veins[x][y] == "lung" then
           for i = 1,50 do
-              createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
+              bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
+              table.insert(things, bub)
           end
       end
 
@@ -209,4 +213,9 @@ function getStream(x, y)
     else
         return 0, 0
     end
+end
+
+function getOrgan(x, y)
+    symbol = level.veins[math.floor(x/tilesize)][math.floor(y/tilesize)]
+    return organs[symbol]
 end
