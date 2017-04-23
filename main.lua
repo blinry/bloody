@@ -210,6 +210,7 @@ function initGame()
 
     for name, organ in pairs(organs) do
         organ.deadline = love.timer.getTime() + math.random(60,100)
+        organ.alive = true
     end
 
     --for i = 1, n do
@@ -464,6 +465,7 @@ function love.draw()
             now = love.timer.getTime()
             remaining = math.ceil(organ.deadline-now)
             if remaining < 0 then
+                organ.alive = false
                 mode = "gameover"
             elseif remaining < 10 then
                 love.graphics.setColor(255, 0, 0)
@@ -519,6 +521,28 @@ function love.draw()
           love.graphics.setFont(love.graphics.newFont(25))
           love.graphics.printf("Press <Enter> to start!", 0, height - 75, width, "center")
         end
+      elseif mode == "gameover" then
+        braindead = not organs["B"].alive
+        good_shape = nil
+        time = 0
+        now = love.timer.getTime()
+        for symbol, organ in pairs(organs) do
+          if organ.deadline - now > time then
+            good_shape = organ.name
+            time = organ.deadline - now
+          end
+        end
+        love.graphics.setColor(255,255,255)
+        love.graphics.setFont(love.graphics.newFont(40))
+        love.graphics.printf("You died!", 0, 100, width, "center")
+        if braindead then
+          love.graphics.printf("You are braindead!", 0, 200, width, "center")
+        end
+        if good_shape then
+          gshape_string = "... "..good_shape
+          love.graphics.printf("At least you took good care about your "..gshape_string,0,300, width, "center")
+        end
+
       end
 
     elseif mode == "menu" then
