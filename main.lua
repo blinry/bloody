@@ -560,6 +560,8 @@ function love.draw()
             love.graphics.printf("Current position: "..organ.name, 100, 20, 1000, "left")
         end
 
+        min_remaining_oxygen = math.huge
+
         y = 100
         for symbol, organ in pairs(organs) do
             if not organ.immune then
@@ -578,10 +580,15 @@ function love.draw()
                 else
                     love.graphics.setColor(255, 255, 255)
                 end
+                min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
                 love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
                 y = y+100
             end
         end
+
+        heart_beat_rate = 1.0 + math.max(0, 100 - min_remaining_oxygen) / 100.0
+        heart_beat:setPitch(heart_beat_rate)
+        heart_beat:setVolume(heart_beat_rate)
 
     elseif mode == "title"  or mode == "gameover" then
 
