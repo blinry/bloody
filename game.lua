@@ -7,9 +7,12 @@ function parseWorld(filename)
     legend["v"] = "down"
     legend["<"] = "left"
     legend["@"] = "start"
-    legend["H"] = "heart"
-    legend["L"] = "lung"
-    legend["B"] = "brain"
+    legend["O"] = "lung"
+    legend["H"] = "H"
+    legend["B"] = "B"
+    legend["S"] = "S"
+    legend["C"] = "C"
+    legend["F"] = "F"
 
     level = {}
     level.veins = {}
@@ -209,4 +212,9 @@ function getStream(x, y)
     else
         return 0, 0
     end
+end
+
+function getOrgan(x, y)
+    symbol = level.veins[math.floor(x/tilesize)][math.floor(y/tilesize)]
+    return organs[symbol]
 end

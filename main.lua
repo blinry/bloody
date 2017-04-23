@@ -134,6 +134,7 @@ function createThing(x, y, typ)
         f = 0.5
     else
         f = 1
+        thing.hasOxygen = true
     end
     thing.shape = love.physics.newCircleShape(0, 0, 100*f)
     thing.fixture = love.physics.newFixture(thing.body, thing.shape)
@@ -200,7 +201,7 @@ function initGame()
     organs["H"] = {name = "Heart"}
 
     for name, organ in pairs(organs) do
-        organ.deadline = love.timer.getTime() + math.random(1,60)
+        organ.deadline = love.timer.getTime() + math.random(60,100)
     end
 
     --for i = 1, n do
@@ -256,6 +257,16 @@ function love.update(dt)
         if vx <= -200 then
             thing.flip = -1
         end
+
+        -- bubble popping
+        if thing.typ == "red" and thing.hasOxygen then
+            x, y = thing.body:getPosition()
+            organ = getOrgan(x, y)
+            if organ then
+                thing.hasOxygen = false
+                organ.deadline = organ.deadline + 10
+            end
+        end
     end
 
     for symbol, organ in pairs(organs) do
@@ -265,6 +276,7 @@ function love.update(dt)
             -- game over
         end
     end
+
 
     x, y = player.body:getPosition()
 
