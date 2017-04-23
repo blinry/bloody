@@ -184,8 +184,15 @@ function initGame()
     game_points = 0
     mode = "title"
 
+    organs = {}
+    organs["B"] = {name = "Brain"}
+    organs["S"] = {name = "Stomach"}
+    organs["F"] = {name = "Feet"}
+    organs["C"] = {name = "Colon"}
+    --organs["H"] = {name = "Heart"}
+
     tilesize = 3000
-    parseWorld("level2.txt")
+    parseWorld("level.txt")
     wallipyTiles(tilesize)
 
     player = createThing(startX, startY, "player", world)
@@ -200,13 +207,6 @@ function initGame()
         thing.follow = things[math.floor((i)/2+offset)]
         table.insert(things, thing)
     end
-
-    organs = {}
-    organs["B"] = {name = "Brain"}
-    organs["S"] = {name = "Stomach"}
-    organs["F"] = {name = "Feet"}
-    organs["C"] = {name = "Colon"}
-    --organs["H"] = {name = "Heart"}
 
     for name, organ in pairs(organs) do
         organ.deadline = love.timer.getTime() + math.random(60,100)

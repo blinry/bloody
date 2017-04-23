@@ -138,6 +138,13 @@ function wallipyTiles()
           startY = (y+0.5)*tilesize
       end
 
+      if level.tiles[x][y].typ == "B" and brain == nil then
+          if not organs["B"].pos then
+              organs["B"].pos = {x, y}
+              organs["B"].image = images.Gehirn
+          end
+      end
+
       if level.tiles[x][y].typ == "lung" then
           for i = 1,50 do
               bub = createThing((x+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), (y+0.5)*tilesize+math.random(-tilesize/4,tilesize/4), "bubble", world)
@@ -263,6 +270,11 @@ function drawLevel()
             if level.tiles[x][y].image then
                 love.graphics.draw(level.tiles[x][y].image, (x+0.5)*tilesize, (y+0.5)*tilesize, level.tiles[x][y].rot, 3, 3, level.tiles[x][y].image:getWidth()/2, level.tiles[x][y].image:getHeight()/2)
             end
+        end
+    end
+    for symbol, organ in pairs(organs) do
+        if organ.pos then
+            love.graphics.draw(organ.image, organ.pos[1]*tilesize, organ.pos[2]*tilesize, 0, 6, 6)
         end
     end
 end
