@@ -1,5 +1,6 @@
 require "slam"
 require "game"
+require "title"
 vector = require "hump.vector"
 Timer = require "hump.timer"
 Camera = require "hump.camera"
@@ -122,11 +123,12 @@ function love.load()
     love.graphics.setBackgroundColor(0, 0, 0)
 
     initGame()
+    initTitle()
 end
 
-function createThing(x, y, typ)
+function createThing(x, y, typ, this_world)
     thing = {}
-    thing.body = love.physics.newBody(world, 0, 0, "dynamic")
+    thing.body = love.physics.newBody(this_world, 0, 0, "dynamic")
 
     if typ == "player" then
         f = 2
@@ -147,7 +149,6 @@ function createThing(x, y, typ)
     thing.typ = typ
     thing.flip = 1
 
-    table.insert(things, thing)
     return thing
 end
 
@@ -180,17 +181,23 @@ function initGame()
     walls = {}
     things = {}
 
+    game_points = 5
+    mode = "title"
+
     tilesize = 3000
     parseWorld("level2.txt")
     wallipyTiles(tilesize)
 
-    player = createThing(startX, startY, "player")
+    player = createThing(startX, startY, "player", world)
+    table.insert(things, player)
+
     offset = #things
     n = 20
 
     for i = 1, n do
-        thing = createThing(startX+math.random(-tilesize/4, tilesize/4), startY+math.random(-tilesize/4, tilesize/4), "red")
+        thing = createThing(startX+math.random(-tilesize/4, tilesize/4), startY+math.random(-tilesize/4, tilesize/4), "red", world)
         thing.follow = things[math.floor((i)/2+offset)]
+        table.insert(things, thing)
     end
 
     organs = {}
@@ -211,76 +218,129 @@ end
 
 function love.update(dt)
     Timer.update(dt)
-    world:update(dt)
 
     ff = 50000
     ff2 = 50000
 
-    if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
-        player.body:applyForce(ff2, 0, 0, 0)
-    end
-    if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
-        player.body:applyForce(-ff2, 0, 0, 0)
-    end
-    if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-        player.body:applyForce(0, -ff2, 0, 0)
-    end
-    if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
-        player.body:applyForce(0, ff2, 0, 0)
-    end
+    if mode == "game" then
+        world:update(dt)
 
-    for i, thing in pairs(things) do
-        -- follow
-        if thing.follow then
-            x1, y1 = thing.follow.body:getPosition()
-            x2, y2 = thing.body:getPosition()
-            dist = math.sqrt((x1-x2)^2 + (y1-y2)^2)
-            if dist > 400 then
-                thing.body:applyForce((x1-x2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
+        if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
+            player.body:applyForce(ff2, 0, 0, 0)
+        end
+        if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
+            player.body:applyForce(-ff2, 0, 0, 0)
+        end
+        if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
+            player.body:applyForce(0, -ff2, 0, 0)
+        end
+        if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
+            player.body:applyForce(0, ff2, 0, 0)
+        end
+
+        for i, thing in pairs(things) do
+            -- follow
+            if thing.follow then
+                x1, y1 = thing.follow.body:getPosition()
+                x2, y2 = thing.body:getPosition()
+                dist = math.sqrt((x1-x2)^2 + (y1-y2)^2)
+                if dist > 400 then
+                    thing.body:applyForce((x1-x2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
+                end
             end
-        end
 
-        -- damping
-        x, y = thing.body:getLinearVelocity()
-        thing.body:applyForce(-10*x, -10*y)
+            -- damping
+            x, y = thing.body:getLinearVelocity()
+            thing.body:applyForce(-10*x, -10*y)
 
-        -- streaming
-        x, y = thing.body:getPosition()
-        fx, fy = getStream(x, y)
-        thing.body:applyForce(fx, fy)
-
-        -- flipping
-        vx = thing.body:getLinearVelocity()
-        if vx >= 200 then
-            thing.flip = 1
-        end
-        if vx <= -200 then
-            thing.flip = -1
-        end
-
-        -- bubble popping
-        if thing.typ == "red" and thing.hasOxygen then
+            -- streaming
             x, y = thing.body:getPosition()
-            organ = getOrgan(x, y)
-            if organ then
-                thing.hasOxygen = false
-                organ.deadline = organ.deadline + 10
+            fx, fy = getStream(x, y)
+            thing.body:applyForce(fx, fy)
+
+            -- flipping
+            vx = thing.body:getLinearVelocity()
+            if vx >= 200 then
+                thing.flip = 1
+            end
+            if vx <= -200 then
+                thing.flip = -1
+            end
+
+            -- bubble popping
+            if thing.typ == "red" and thing.hasOxygen then
+                x, y = thing.body:getPosition()
+                organ = getOrgan(x, y)
+                if organ then
+                    thing.hasOxygen = false
+                    organ.deadline = organ.deadline + 10
+                end
             end
         end
-    end
 
-    for symbol, organ in pairs(organs) do
-        now = love.timer.getTime()
-        remaining = math.ceil(organ.deadline-now)
-        if remaining <= 0 then
-            -- game over
+        for symbol, organ in pairs(organs) do
+            now = love.timer.getTime()
+            remaining = math.ceil(organ.deadline-now)
+            if remaining <= 0 then
+                -- game over
+            end
         end
+
+
+        x, y = player.body:getPosition()
+
+        camera:lookAt(x, y)
+
+    elseif mode == "title" then
+        title_world:update(dt)
+
+        if #title_bubbles < 1 then
+          title_bubble_timer = title_bubble_timer - dt
+        end
+
+        if title_bubble_timer <= 0 then
+          title_bubble_timer = math.random(5,10)
+
+          for i, red in pairs(title_bloodies) do
+            red.hasOxygen = false
+          end
+          
+          if #title_bubbles == 0 then
+            for i = 1, (game_points+1) do
+              bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
+              table.insert(title_bubbles, bub)
+            end
+          end
+        end
+
+        for i, red in pairs(title_bloodies) do
+          if red.follow then
+            x1, y1 = red.follow.body:getPosition()
+            x2, y2 = red.body:getPosition()
+            dist = math.sqrt((x1-x2)^2 + (y1-y2)^2)
+            if dist > 100 then
+              red.body:applyForce((x1-2)*ff/dist, (y1-y2)*ff/dist, 0, 0)
+            end
+          elseif not red.hasOxygen and #title_bubbles > 0 then
+            aimFor = math.random(#title_bubbles)
+            red.follow = title_bubbles[aimFor]
+          end
+          -- damping
+          x, y = red.body:getLinearVelocity()
+          red.body:applyForce(-10*x, -10*y)
+
+          -- flipping
+          vx = red.body:getLinearVelocity()
+          if vx >= 200 then
+            red.flip = 1
+          end
+          if vx <= -200 then
+            red.flip = -1
+          end
+        end
+
+      camera:lookAt(0,0)
     end
-
-
-    x, y = player.body:getPosition()
-
-    camera:lookAt(x, y)
 end
 
 function love.keypressed(key)
@@ -292,6 +352,11 @@ function love.keypressed(key)
         zoom = zoom/2
     elseif key == "+" and debug then
         zoom = zoom*2
+    elseif key == "p" and mode == "game" then
+        saveX, saveY = player.body:getPosition()
+        mode = "title"
+    elseif key == "return" and mode == "title" then
+        mode = "game"
     end
     camera:zoomTo(zoom)
 end
@@ -309,7 +374,21 @@ function pickUp(red, bubble)
     if not red.hasOxygen then
         red.hasOxygen = true
         remove(things, bubble)
+        remove(title_bubbles, bubble)
+
+        for i, thing in pairs(things) do
+          if thing.follow == bubble then
+            thing.follow = nil
+          end
+        end
+        for i, red in pairs(title_bloodies) do
+          if red.follow == bubble then
+            red.follow = nil
+          end
+        end
+
         bubble.body:destroy()
+
     end
 end
 
@@ -325,63 +404,90 @@ end
 
 function love.draw()
     love.graphics.setColor(255, 255, 255)
+    if mode == "game" then
+        -- draw world
+        camera:attach()
 
-    -- draw world
-    camera:attach()
-
-    x, y = camera:worldCoords(0, 0)
-    xx = math.floor(x/(images.bg:getWidth()*4))
-    yy = math.floor(y/(images.bg:getWidth()*4))
-    for x = xx,xx+3 do
-        for y = yy,yy+3 do
-            love.graphics.draw(images.bg, images.bg:getWidth()*x*4, images.bg:getHeight()*y*4, 0, 4, 4)
-        end
-    end
-
-    for i, thing in pairs(things) do
-        x, y = thing.body:getPosition()
-        if thing.typ == "player" then
-            if thing.hasOxygen then
-                love.graphics.draw(images.bluti, x, y, 0, 2*thing.flip, 2, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
-            else
-                love.graphics.draw(images.blutiempty, x, y, 0, 2*thing.flip, 2, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+        x, y = camera:worldCoords(0, 0)
+        xx = math.floor(x/(images.bg:getWidth()*4))
+        yy = math.floor(y/(images.bg:getWidth()*4))
+        for x = xx,xx+3 do
+            for y = yy,yy+3 do
+                love.graphics.draw(images.bg, images.bg:getWidth()*x*4, images.bg:getHeight()*y*4, 0, 4, 4)
             end
-        elseif thing.typ == "red" then
-            if thing.hasOxygen then
-                love.graphics.draw(images.bluti, x, y, 0, thing.flip, 1, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
-            else
-                love.graphics.draw(images.blutiempty, x, y, 0, thing.flip, 1, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
-            end
-        elseif thing.typ == "bubble" then
-            love.graphics.draw(images.bubble, x, y, 0, 1, 1, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
         end
-    end
 
-    love.graphics.setLineWidth(50)
-    love.graphics.setColor(200, 0, 0)
+        for i, thing in pairs(things) do
+            x, y = thing.body:getPosition()
+            if thing.typ == "player" then
+                if thing.hasOxygen then
+                    love.graphics.draw(images.bluti, x, y, 0, 2*thing.flip, 2, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
+                else
+                    love.graphics.draw(images.blutiempty, x, y, 0, 2*thing.flip, 2, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+                end
+            elseif thing.typ == "red" then
+                if thing.hasOxygen then
+                    love.graphics.draw(images.bluti, x, y, 0, thing.flip, 1, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
+                else
+                    love.graphics.draw(images.blutiempty, x, y, 0, thing.flip, 1, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+                end
+            elseif thing.typ == "bubble" then
+                love.graphics.draw(images.bubble, x, y, 0, 1, 1, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+            end
+        end
 
-    for i, wall in pairs(walls) do
-        love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
-    end
+        love.graphics.setLineWidth(50)
+        love.graphics.setColor(200, 0, 0)
 
-    love.graphics.setColor(255, 255, 255)
+        for i, wall in pairs(walls) do
+            love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
+        end
 
-    camera:detach()
+        love.graphics.setColor(255, 255, 255)
 
-    -- draw UI
+        camera:detach()
+        -- draw UI
 
-    y = 100
-    for symbol, organ in pairs(organs) do
-        now = love.timer.getTime()
-        remaining = math.ceil(organ.deadline-now)
-        if remaining < 10 then
-            love.graphics.setColor(255, 0, 0)
-        elseif remaining < 30 then
-            love.graphics.setColor(255, 255, 0)
+        y = 100
+        for symbol, organ in pairs(organs) do
+            now = love.timer.getTime()
+            remaining = math.ceil(organ.deadline-now)
+            if remaining < 10 then
+                love.graphics.setColor(255, 0, 0)
+            elseif remaining < 30 then
+                love.graphics.setColor(255, 255, 0)
+            else
+                love.graphics.setColor(255, 255, 255)
+            end
+            love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
+            y = y+100
+        end
+
+    elseif mode == "title" then
+
+      love.graphics.setColor(255,255,255)
+      love.graphics.draw(images.title, 0, 0)
+
+      camera:attach()
+      x,y = camera:worldCoords(0,0)
+
+      for i, red in pairs(title_bloodies) do
+        x, y = red.body:getPosition()
+        if red.hasOxygen then
+          love.graphics.draw(images.bluti, x, y, 0, red.flip, 1, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
         else
-            love.graphics.setColor(255, 255, 255)
-        end
-        love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
-        y = y+100
+          love.graphics.draw(images.blutiempty, x, y, 0, red.flip, 1, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+         end
+      end
+      for i, bub in pairs(title_bubbles) do
+        x,y = bub.body:getPosition()
+        love.graphics.draw(images.bubble, x, y, 0, 1, 1, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+      end
+
+      camera:detach()
+
+
+    elseif mode == "menu" then
     end
+
 end
