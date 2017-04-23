@@ -421,42 +421,37 @@ function love.draw()
         -- draw world
         camera:attach()
 
-        x, y = camera:worldCoords(0, 0)
-        xx = math.floor(x/(images.bg:getWidth()*4))
-        yy = math.floor(y/(images.bg:getWidth()*4))
-        for x = xx,xx+3 do
-            for y = yy,yy+3 do
-                love.graphics.draw(images.bg, images.bg:getWidth()*x*4, images.bg:getHeight()*y*4, 0, 4, 4)
-            end
-        end
+        drawLevel()
+
+        f = 0.5
 
         for i, thing in pairs(things) do
             x, y = thing.body:getPosition()
             if thing.typ == "player" then
                 if thing.hasOxygen then
-                    love.graphics.draw(images.bluti, x, y, 0, 2*thing.flip, 2, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
+                    love.graphics.draw(images.bluti, x, y, 0, f*2*thing.flip, f*2, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
                 else
-                    love.graphics.draw(images.blutiempty, x, y, 0, 2*thing.flip, 2, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+                    love.graphics.draw(images.blutiempty, x, y, 0, f*2*thing.flip, f*2, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
                 end
             elseif thing.typ == "red" then
                 if thing.hasOxygen then
-                    love.graphics.draw(images.bluti, x, y, 0, thing.flip, 1, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
+                    love.graphics.draw(images.bluti, x, y, 0, f*thing.flip, f, images.bluti:getWidth()/2, images.bluti:getHeight()/2)
                 else
-                    love.graphics.draw(images.blutiempty, x, y, 0, thing.flip, 1, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
+                    love.graphics.draw(images.blutiempty, x, y, 0, f*thing.flip, f, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
                 end
             elseif thing.typ == "bubble" then
-                love.graphics.draw(images.bubble, x, y, 0, 1, 1, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+                love.graphics.draw(images.bubble, x, y, 0, f, f, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
             end
         end
 
-        love.graphics.setLineWidth(50)
-        love.graphics.setColor(200, 0, 0)
+        --love.graphics.setLineWidth(50)
+        --love.graphics.setColor(200, 0, 0)
 
-        for i, wall in pairs(walls) do
-            love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
-        end
+        --for i, wall in pairs(walls) do
+        --    love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
+        --end
 
-        love.graphics.setColor(255, 255, 255)
+        --love.graphics.setColor(255, 255, 255)
 
         camera:detach()
         -- draw UI
