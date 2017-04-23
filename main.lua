@@ -1,6 +1,7 @@
 require "slam"
 require "game"
 require "title"
+require "quests"
 vector = require "hump.vector"
 Timer = require "hump.timer"
 Camera = require "hump.camera"
@@ -190,6 +191,11 @@ end
 function initGame()
     walls = {}
     things = {}
+
+    quests = {}
+    quest = Quest.create("abc", 1000, "cde")
+    quest:textAppear({"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."})
+    table.insert(quests, quest)
 
     game_points = 0
     mode = "title"
@@ -397,6 +403,10 @@ function love.keypressed(key)
         mode = "game"
         camera:lookAt(startX, startY)
     end
+
+    for i, quest in pairs(quests) do
+      quest:inputHandle(key)
+    end
     camera:zoomTo(zoom)
 end
 
@@ -489,6 +499,11 @@ function love.draw()
         camera:detach()
         -- draw UI
 
+        for i, quest in pairs(quests) do
+          quest:draw()
+        end
+
+
         y = 100
         for symbol, organ in pairs(organs) do
             if not organ.immune then
@@ -537,9 +552,9 @@ function love.draw()
 
       camera:detach()
 
+      width, height = love.graphics.getDimensions()
       if mode == "title" then
         love.graphics.setColor(255,255,255)
-        width, height = love.graphics.getDimensions()
         love.graphics.setFont(title_font)
         love.graphics.printf("A Bloody Small World!", 0, 100, width, "center")
 
