@@ -311,6 +311,7 @@ function love.update(dt)
                         dist = math.sqrt((x-x2)^2 + (y-y2)^2)
                         if dist < 1500 then
                             thing.hasOxygen = true
+                            love.audio.play(sounds.pick_up_oxygen)
                         end
                     end
                 end
