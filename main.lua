@@ -504,7 +504,7 @@ function love.keypressed(key)
         mode = "game"
 
         for name, organ in pairs(organs) do
-            organ.remaining = 10
+            organ.remaining = 60
             organ.alive = true
         end
 

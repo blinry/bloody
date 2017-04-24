@@ -59,7 +59,7 @@ function Quest:draw()
 end
 
 function Quest:inputHandle(key)
-  if not self.toDraw or not key == "return" then
+  if not self.toDraw or key ~= "return" then
     return
   end
 

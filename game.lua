@@ -205,8 +205,8 @@ function wallipyTiles()
       if level.tiles[x][y].typ == "S" then
           if not organs["S"].pos then
               organs["S"].pos = {x, y}
-              organs["S"].image = images.organ
-              organs["S"].rot = math.pi
+              organs["S"].image = images.Magen
+              organs["S"].rot = 0
           end
       end
 
@@ -229,8 +229,8 @@ function wallipyTiles()
       if level.tiles[x][y].typ == "F" then
           if not organs["F"].pos then
               organs["F"].pos = {x, y}
-              organs["F"].image = images.organ
-              organs["F"].rot = 0
+              organs["F"].image = images.feet
+              organs["F"].rot = math.pi
           end
       end
 
