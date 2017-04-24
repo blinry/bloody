@@ -311,7 +311,7 @@ function love.update(dt)
         world:update(dt)
 
         if not paused then
-            time = time+dt*(16/(10*60))*100
+            time = time+dt*(16/(10*60))
             q = quests[math.floor(time)]
             if q then
                 currentQuest = q
@@ -435,7 +435,7 @@ function love.update(dt)
         speedX, speedY = player.body:getLinearVelocity()
         speed = math.sqrt(speedX^2 + speedY^2)
         targetzoom = zoom/(1+range(speed, 0, 20000))
-        z = lerp(camera.scale, targetzoom, dt)
+        z = camera.scale + 0.2*dt*(targetzoom-camera.scale)
         camera:zoomTo(z)
 
 
