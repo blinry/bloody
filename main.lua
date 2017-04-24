@@ -800,9 +800,7 @@ function love.draw()
         love.graphics.setColor(255,255,255)
         love.graphics.setFont(subtitle_font)
         love.graphics.printf("Our human died! :'-(", 0, 200, width, "center")
-        if braindead then
-          love.graphics.printf("Our human is braindead! :'-O", 0, 200, width, "center")
-        end
+
         if good_shape then
           gshape_string = "... "..good_shape
           love.graphics.printf("At least we took good care of her "..gshape_string.."!\nPress Space to return to the title screen.",0,400, width, "center")
