@@ -6,8 +6,8 @@ vector = require "hump.vector"
 Timer = require "hump.timer"
 Camera = require "hump.camera"
 
-max_oxygen = 200
-bubble_oxygen = 5
+max_oxygen = 400
+bubble_oxygen = 10
 
 -- convert HSL to RGB (input and output range: 0 - 255)
 function HSL(h, s, l, a)
@@ -211,7 +211,7 @@ function initGame()
     quests = {}
 
     quests[8] = {organ="F", before={
-        "Okay, class! Welcome to your first day in the blood stream! This is the heart, where all our journeys begin and end. If any of you gets lost, we'll meet back here, alright?",
+        "Okay, class! Welcome to your first day in the blood stream! To your left is the heart, where all our journeys begin and end. If any of you gets lost, we'll meet back here, alright?",
         "Also, there might be more cells joining us later in the day. Be nice to them!",
         "Alright. attention, everyone! Our human is about to wake up! First, she will need some energy in her legs, to get up and walk to work! Everybody pick up some oxygen from Mr Lung! Then, follow me allll the way down!"
     }, after={
@@ -233,7 +233,7 @@ function initGame()
     quests[16] = {organ="C", before={
         "Attention, class! Remember that lunch from earlier? We're now needed in the bowel! Don't worry, this will be a fun ride! I think they even take a picture at the end, so put on your cutest smile!"
     }, after={
-        "(to write)"
+        "There is even a booth where you can buy your photo!"
     }}
 
     quests[18] = {organ=nil, before={
@@ -271,7 +271,7 @@ function initGame()
     organs["B"] = {key="B", name = "Brain"}
     organs["S"] = {key="S", name = "Stomach"}
     organs["F"] = {key="F", name = "Feet"}
-    organs["C"] = {key="C", name = "Colon"}
+    organs["C"] = {key="C", name = "Bowel"}
     organs["L"] = {key="L", name = "Liver", immune = true}
     organs["H"] = {key="H", name = "Heart", immune = true}
     organs["O"] = {key="O", name = "Lung", immune = true}
@@ -288,7 +288,7 @@ function initGame()
     n = 20
 
     for i = 1, n do
-        thing = createThing(startX+math.random(-tilesize/4, tilesize/4), startY+math.random(-tilesize/4, tilesize/4), "red", world)
+        thing = createThing(startX+math.random(-tilesize/4, tilesize/4)-2000, startY+math.random(-tilesize/4, tilesize/4), "red", world)
         thing.follow = things[math.floor((i)/2+offset)]
         table.insert(things, thing)
     end
@@ -311,7 +311,7 @@ function love.update(dt)
         world:update(dt)
 
         if not paused then
-            time = time+dt*(10/(16*60))
+            time = time+dt*(16/(10*60))
             q = quests[math.floor(time)]
             if q then
                 currentQuest = q
@@ -507,7 +507,7 @@ function love.keypressed(key)
         mode = "game"
 
         for name, organ in pairs(organs) do
-            organ.remaining = 60
+            organ.remaining = 100
             organ.alive = true
         end
 
@@ -636,30 +636,30 @@ function love.draw()
                 sx = (sign.pos[1]+0.5)*tilesize+sign.ox
                 sy = (sign.pos[2]+0.5)*tilesize+sign.oy
                 l = tilesize/2
-                o = tilesize/8
+                o = tilesize/16
 
                 if sign.left then
                     love.graphics.draw(images.sign, sx, sy, math.pi, 5, 5, 0, images.sign:getHeight()/2)
                     love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.left, sx-l-o, sy, l, "right")
+                    love.graphics.printf(sign.left, sx-l-o, sy-170, l, "right")
                     love.graphics.setColor(255, 255, 255)
                 end
                 if sign.right then
                     love.graphics.draw(images.sign, sx, sy, 0, 5, 5, 0, images.sign:getHeight()/2)
                     love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.right, sx+o, sy, l, "left")
+                    love.graphics.printf(sign.right, sx+o, sy-170, l, "left")
                     love.graphics.setColor(255, 255, 255)
                 end
                 if sign.up then
                     love.graphics.draw(images.sign, sx, sy, math.pi/2*3, 5, 5, 0, images.sign:getHeight()/2)
                     love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.up, sx, sy-l-o, l, "right", math.pi/2)
+                    love.graphics.printf(sign.up, sx+170, sy-l-o, l, "right", math.pi/2)
                     love.graphics.setColor(255, 255, 255)
                 end
                 if sign.down then
                     love.graphics.draw(images.sign, sx, sy, math.pi/2, 5, 5, 0, images.sign:getHeight()/2)
                     love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.down, sx, sy+o, l, "left", math.pi/2)
+                    love.graphics.printf(sign.down, sx+170, sy+o, l, "left", math.pi/2)
                     love.graphics.setColor(255, 255, 255)
                 end
             end
@@ -698,7 +698,7 @@ function love.draw()
                 display_organ_notification(990, y, organ, function (title_x, title_y)
                     local old_r, old_g, old_b, old_a = love.graphics.getColor()
 
-                    local bar_width = organ.remaining
+                    local bar_width = organ.remaining/max_oxygen*200
 
                     if bar_width > 100 then
                         love.graphics.setColor(0, 255, 0)

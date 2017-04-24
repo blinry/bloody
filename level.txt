@@ -1,48 +1,43 @@
   
   
   
-        BB
-        BB
-   v<<<<<^<<<<<<
-   v           ^
-   v  >>>>>>v  ^
-   v  ^^    v  ^
-   v  OO    v  ^
-   v  OO    v  ^
-   v  ^^    v  ^
-   v >^^<<  v  ^
-   v ^ l ^  v  ^
-   v ^<#>^  v  ^
-   v   ^    v  ^
-   v   ^v<<<<  ^
-   v   HH      ^
-  h>>>@HH>>>>>>#b
-   ^           v
+         BB
+         BB
+      v<<<^<<<
+    v<<      ^<  
+    v  >>v    ^  
+    v  ^^>v   ^  
+   v<  OO v   ^< 
+   v   OO v    ^ 
+   >v  ^^<v    ^ 
+    v  ^l^v    ^<
+    v  ^#^v     ^
+    v   ^v<     ^
+    v   HH    >v^
+   h>>>@HH>>>>^>#b
+   >^          v<
    ^        S<<#s
-   ^        v  v
-   ^<L      v  v
-   ^ ^<<<<<<<  v
-   ^ ^         v
-   ^ ^         v
-   ^ ^         v
-   ^ ^ v<<v<v< v
-   ^ ^<C ^v^v^ v
-   ^     ^<^<^<#c
-   ^           v
-   ^<<         v
-     ^<<<<<<<<<v
-              ^v
-              ^v
-              ^vk
-              ^v
-              ^v
-              ^v
-              ^v
-              ^F
+   ^<L  v<  v  v
+  >^ ^<<<^<<<  v
+  ^ >^      w  v
+  ^ ^<v<<v<v<  v
+  ^< ^C ^v^<^ v<
+   ^    ^v  ^<#c
+   ^<<  ^<    v
+     ^<<<<   v<
+         ^<<<v
+            ^v
+            ^v
+            ^vk
+            ^v
+            ^v
+            ^v
+            ^F
 ---
 lv <Right_lung >Left_lung
-c< <Colon vFeet
+c< <Bowel vFeet
 h> >Heart
-b< ^Brain vOrgans
+b< ^Brain vOrgans_&_lower_body
 s< <Stomach
-k< vKeep_going
+k< vKeep_going!
+wv <Wheeee

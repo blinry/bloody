@@ -11,7 +11,7 @@ function Quest:create(questgiver, timer)
   que.state = "not_started"
   que.toDraw = false
   que.drawTimer = love.timer.getTime()
-  que.appearTime = 1.0
+  que.appearTime = 0.5
   que.font =  love.graphics.newFont(25)
   return que
 end
@@ -84,13 +84,13 @@ end
 
 function rectangleAppear(bordercolor, fillcolor, x, y, width, height)
   r, g, b, a = love.graphics.getColor()
-  love.graphics.setColor(fillcolor[1], fillcolor[2], fillcolor[3], 200)
-  love.graphics.rectangle("fill", x, y, width, height)
+  love.graphics.setColor(0, 0, 0, 150)
+  love.graphics.rectangle("fill", x, y, width, height, 5)
 
-  if width > 10 and height > 10 then
-    love.graphics.setColor(bordercolor[1], bordercolor[2], bordercolor[3], 200)
-    love.graphics.rectangle("line", x+5, y+5, width-10, height-10)
-  end
+  --if width > 10 and height > 10 then
+  --  love.graphics.setColor(bordercolor[1], bordercolor[2], bordercolor[3], 200)
+  --  love.graphics.rectangle("line", x+5, y+5, width-10, height-10, 5)
+  --end
 
   love.graphics.setColor(r, g, b, a)
 end
