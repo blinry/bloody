@@ -605,23 +605,31 @@ function love.draw()
             if not organ.immune then
                 now = love.timer.getTime()
                 remaining = math.ceil(organ.deadline-now)
-                if remaining < 0 then
+                if remaining < 1 then
                     organ.alive = false
                     mode = "gameover"
                     game_music:stop()
                     heart_beat:stop()
                     game_over_music = music.blues:play()
                     sounds.pick_up_oxygen:setVolume(.2)
-                elseif remaining < 10 then
-                    love.graphics.setColor(255, 0, 0)
-                elseif remaining < 30 then
-                    love.graphics.setColor(255, 255, 0)
-                else
-                    love.graphics.setColor(255, 255, 255)
                 end
                 min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
                 display_organ_notification(920, y, organ, function (title_x, title_y)
-                  love.graphics.printf(remaining, title_x, title_y, 1000, "left")
+                    local old_r, old_g, old_b, old_a = love.graphics.getColor()
+
+                    if remaining > 100 then
+                        love.graphics.setColor(0, 255, 0)
+                    elseif remaining > 50 then
+                        love.graphics.setColor(255 * (100 - remaining) / 50, 255, 0)
+                    elseif remaining > 0 then
+                        love.graphics.setColor(255, 255 * remaining / 50, 0)
+                    else
+                        love.graphics.setColor(255, 0, 0)
+                    end
+
+                    love.graphics.printf(remaining, title_x, title_y, 1000, "left")
+
+                    love.graphics.setColor(old_r, old_g, old_b, old_a)
                 end)
                 y = y+95
             end
