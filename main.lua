@@ -492,7 +492,7 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-    if key == "escape" then
+    if key == "escape" and mode == "title" then
         love.window.setFullscreen(false)
         love.timer.sleep(0.1)
         love.event.quit()
@@ -500,9 +500,11 @@ function love.keypressed(key)
         zoom = zoom/2
     elseif key == "+" and debug then
         zoom = zoom*2
-    elseif key == "p" and mode == "game" then
+    elseif key == "escape" and mode == "game" then
         saveX, saveY = player.body:getPosition()
         mode = "title"
+        game_music:stop()
+        heart_beat:stop()
     elseif key == "return" and mode == "title" then
         mode = "game"
 
@@ -511,7 +513,8 @@ function love.keypressed(key)
             organ.alive = true
         end
 
-        camera:lookAt(startX, startY)
+        x, y = player.body:getPosition()
+        camera:lookAt(x, y)
         intro_music:stop()
         game_music = music.party:play()
         heart_beat = music.heart_beat:play()
