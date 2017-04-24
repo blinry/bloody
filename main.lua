@@ -237,12 +237,12 @@ function initGame()
     }}
 
     quests[18] = {organ=nil, before={
-        "Eeew, someone sneezed at our human! Be careful to avoid the viruses, they will steal your bubbles!"
+        "Eeew, someone sneezed at our human! Be careful to avoid the viruses, they will steal your bubbles! [These don't actually exist yet.]"
     }, after={
         ""
     }}
 
-    quests[20] = {organ=nil, before={
+    quests[20] = {organ="L", before={
         "Work's over, so the rest of the day should be easy! ...",
         "Oh, I just got an emergency report: Our human started drinking cocktails! Quickly, everyone, follow me to the liver!"
     }, after={
@@ -268,11 +268,11 @@ function initGame()
     mode = "title"
 
     organs = {}
+    organs["F"] = {key="F", name = "Feet"}
     organs["B"] = {key="B", name = "Brain"}
     organs["S"] = {key="S", name = "Stomach"}
-    organs["F"] = {key="F", name = "Feet"}
     organs["C"] = {key="C", name = "Bowel"}
-    organs["L"] = {key="L", name = "Liver", immune = true}
+    organs["L"] = {key="L", name = "Liver"}
     organs["H"] = {key="H", name = "Heart", immune = true}
     organs["O"] = {key="O", name = "Lung", immune = true}
 
@@ -311,7 +311,7 @@ function love.update(dt)
         world:update(dt)
 
         if not paused then
-            time = time+dt*(16/(10*60))
+            time = time+dt*(16/(10*60))*100
             q = quests[math.floor(time)]
             if q then
                 currentQuest = q
