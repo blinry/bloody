@@ -6,6 +6,8 @@ vector = require "hump.vector"
 Timer = require "hump.timer"
 Camera = require "hump.camera"
 
+max_oxygen = 200
+
 -- convert HSL to RGB (input and output range: 0 - 255)
 function HSL(h, s, l, a)
     if s<=0 then return l,l,l,a end
@@ -391,7 +393,7 @@ function love.update(dt)
                 organ = getOrgan(x, y)
                 if organ and not organ.immune then
                     thing.hasOxygen = false
-                    organ.remaining = organ.remaining + 10
+                    organ.remaining = math.min(max_oxygen, organ.remaining + 10)
                     sounds.drop_oxygen:setPitch(math.random(90, 110)/100)
                     sounds.drop_oxygen:play()
                 end
@@ -691,26 +693,23 @@ function love.draw()
         y = 10
         for symbol, organ in pairs(organs) do
             if not organ.immune and organ.displayed then
-                now = love.timer.getTime()
-                remaining = organ.remaining
-                min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
+                min_remaining_oxygen = math.min(min_remaining_oxygen, organ.remaining)
                 display_organ_notification(990, y, organ, function (title_x, title_y)
                     local old_r, old_g, old_b, old_a = love.graphics.getColor()
 
-                    local bar_width = remaining
+                    local bar_width = organ.remaining
 
-                    if remaining > 100 then
+                    if bar_width > 100 then
                         love.graphics.setColor(0, 255, 0)
-                        bar_width = 100 + math.min(100, remaining / 5)
-                    elseif remaining > 50 then
-                        love.graphics.setColor(255 * (100 - remaining) / 50, 255, 0)
-                    elseif remaining > 20 then
-                        love.graphics.setColor(255, 255 * (remaining - 20) / 30, 0)
+                    elseif bar_width > 50 then
+                        love.graphics.setColor(255 * (100 - bar_width) / 50, 255, 0)
+                    elseif bar_width > 20 then
+                        love.graphics.setColor(255, 255 * (bar_width - 20) / 30, 0)
                     else
                         love.graphics.setColor(255, 0, 0)
                     end
 
-                    --love.graphics.printf(remaining, title_x, title_y, 1000, "left")
+                    --love.graphics.printf(bar_width, title_x, title_y, 1000, "left")
                     love.graphics.rectangle("fill", title_x, title_y, bar_width, 10, 2)
 
                     love.graphics.setColor(old_r, old_g, old_b, old_a)
