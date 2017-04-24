@@ -73,6 +73,7 @@ function parseWorld(filename)
             for w in line:gmatch("%S+") do
                 dir = w:sub(1,1)
                 text = w:sub(2)
+                text = text:gsub("_", " ")
                 if dir == "<" then
                     signs[c].left = text
                 elseif dir == ">" then
