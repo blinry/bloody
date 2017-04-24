@@ -13,8 +13,8 @@
     v  ^l^v    ^<
     v  ^#^v     ^
     v   ^v<     ^
-    v   HH    >v^
-   h>>>@HH>>>>^>#b
+    v   HH   >v ^
+   h>>>@HH>>>^>>#b
    >^          v<
    ^        S<<#s
    ^<L  v<  v  v

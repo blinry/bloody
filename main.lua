@@ -275,6 +275,11 @@ function initGame()
     organs["H"] = {key="H", name = "Heart", immune = true}
     organs["O"] = {key="O", name = "Lung", immune = true}
 
+    for name, organ in pairs(organs) do
+        organ.remaining = 100
+        organ.alive = true
+    end
+
     tilesize = 3000
     parseWorld("level.txt")
     wallipyTiles(tilesize)
@@ -404,7 +409,7 @@ function love.update(dt)
                     if thing2.typ == "oxystation" then
                         x, y = thing.body:getPosition()
                         x2, y2 = thing2.body:getPosition()
-                        dist = math.sqrt((x-x2)^2 + (y-y2)^2)
+                        dist = math.sqrt((0.5*(x-x2))^2 + (y-y2)^2)
                         if dist < 1500 then
                             thing.hasOxygen = true
                             sounds.pick_up_oxygen:setPitch(math.random(90, 110)/100)
@@ -501,7 +506,6 @@ function love.keypressed(key)
         zoom = 0.25
         camera:zoomTo(zoom)
         game_over_music:stop()
-        intro_music = music.intro:play()
     elseif (key == "escape" or key == "p") and mode == "game" then
         saveX, saveY = player.body:getPosition()
         mode = "title"
@@ -517,11 +521,6 @@ function love.keypressed(key)
         zoom = zoom*2
     elseif (key == "return" or key == "space") and mode == "title" then
         mode = "game"
-
-        for name, organ in pairs(organs) do
-            organ.remaining = 100
-            organ.alive = true
-        end
 
         x, y = player.body:getPosition()
         camera:lookAt(x, y)
@@ -685,9 +684,9 @@ function love.draw()
         --love.graphics.setLineWidth(50)
         --love.graphics.setColor(200, 0, 0)
 
-        --for i, wall in pairs(walls) do
-        --    love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
-        --end
+        for i, wall in pairs(walls) do
+            love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
+        end
 
         --love.graphics.setColor(255, 255, 255)
 
