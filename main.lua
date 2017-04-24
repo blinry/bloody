@@ -434,9 +434,9 @@ function love.update(dt)
 
         speedX, speedY = player.body:getLinearVelocity()
         speed = math.sqrt(speedX^2 + speedY^2)
-        targetzoom = zoom/(1+range(speed, 0, 20000))
-        z = camera.scale + 0.2*dt*(targetzoom-camera.scale)
-        camera:zoomTo(z)
+        targetzoom = zoom/(1+2*range(speed, 0, 20000))
+        thezoom = camera.scale + dt*(targetzoom-camera.scale)
+        camera:zoomTo(thezoom)
 
 
     elseif mode == "title" or mode == "gameover" then
@@ -519,7 +519,7 @@ function love.keypressed(key)
     end
 
     box:inputHandle(key)
-    camera:zoomTo(zoom)
+    --camera:zoomTo(zoom)
 end
 
 function love.mousepressed(x, y, button, touch)
