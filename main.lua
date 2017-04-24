@@ -646,7 +646,7 @@ function love.draw()
 
         heart_beat_rate = 1.0 + math.max(0, 100 - min_remaining_oxygen) / 100.0
         heart_beat:setPitch(heart_beat_rate)
-        heart_beat:setVolume(heart_beat_rate)
+        heart_beat:setVolume(0.5 * heart_beat_rate)
 
     elseif mode == "title"  or mode == "gameover" then
 
