@@ -489,8 +489,8 @@ function display_organ_notification(x, y, organ, title_callback)
   love.graphics.setColor(255, 255, 255, 255)
 
   if organ.image then
-    love.graphics.rectangle("fill", x + 10, y + 10, 10, 10)
-    love.graphics.draw(organ.image, x + 10, y + 10, 0, 0.035)
+    local thumbnail_size = 70
+    love.graphics.draw(organ.image, x + 10, y + 10, 0, thumbnail_size / organ.image:getWidth())
   end
 
   love.graphics.setFont(small_font)
@@ -594,13 +594,13 @@ function love.draw()
         x, y = player.body:getPosition()
         organ = getOrgan(x, y)
 
-        display_organ_notification(20, 20, organ, function (x, y)
+        display_organ_notification(10, 10, organ, function (x, y)
           love.graphics.printf("Current position", x, y, 1000, "left")
         end)
 
         min_remaining_oxygen = math.huge
 
-        y = 120
+        y = 10
         for symbol, organ in pairs(organs) do
             if not organ.immune then
                 now = love.timer.getTime()
@@ -620,10 +620,10 @@ function love.draw()
                     love.graphics.setColor(255, 255, 255)
                 end
                 min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
-                display_organ_notification(20, y, organ, function (title_x, title_y)
+                display_organ_notification(920, y, organ, function (title_x, title_y)
                   love.graphics.printf(remaining, title_x, title_y, 1000, "left")
                 end)
-                y = y+100
+                y = y+95
             end
         end
 
