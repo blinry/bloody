@@ -152,6 +152,12 @@ function createThing(x, y, typ, this_world)
         --thing.hasOxygen = true
     end
 
+    if typ == "virus" then
+        imgs = {images.Virus1, images.Virus2, images.white, images.Darmbakterien, images.thrombozyten}
+        thing.image = imgs[math.random(#imgs)]
+        f = 2
+    end
+
     if typ == "oxystation" then
         thing.body = love.physics.newBody(this_world, 0, 0)
         --thing.shape = love.physics.newRectangleShape(200, 200, 600, 600)
@@ -176,12 +182,16 @@ function createThing(x, y, typ, this_world)
     return thing
 end
 
-function spawnThing(img)
+function spawnThing(typ)
     success = false
     while not success do
         x = math.random(1,25)
         y = math.random(1,40)
-        --level.tiles[x][y]
+        if level.tiles[x][y].typ ~= "empty" and not isNotDirOrEmpty(level.tiles[x][y].typ) then -- LOL
+            t = createThing((x+0.5)*tilesize, (y+0.5)*tilesize, typ, world)
+            table.insert(things, t)
+            success = true
+        end
     end
 end
 
@@ -250,9 +260,11 @@ function initGame()
     }, after={
         ""
     },
-    --action = function ()
-    --    spawnThing(images.Virus1)
-    --end
+    action = function ()
+        --for i=1,10 do
+        --    spawnThing("virus")
+        --end
+    end
     }
 
     quests[20] = {organ="L", before={
@@ -314,6 +326,10 @@ function initGame()
         table.insert(things, thing)
     end
 
+    for i=1,20 do
+        spawnThing("virus")
+    end
+
     --for i = 1, n do
     --    createThing(math.random(0, 2000)+2000, math.random(0, 2000), "bubble")
     --end
@@ -332,7 +348,7 @@ function love.update(dt)
         world:update(dt)
 
         if not paused then
-            time = time+dt*(16/(10*60))
+            time = time+dt*(16/(10*60))*1000
             q = quests[math.floor(time)]
             if q then
                 currentQuest = q
@@ -398,9 +414,11 @@ function love.update(dt)
                 thing.body:applyForce(-10*x, -10*y)
 
                 -- streaming
-                x, y = thing.body:getPosition()
-                fx, fy = getStream(x, y)
-                thing.body:applyForce(fx, fy)
+                if thing.typ ~= "virus" then
+                    x, y = thing.body:getPosition()
+                    fx, fy = getStream(x, y)
+                    thing.body:applyForce(fx, fy)
+                end
 
                 -- flipping
                 vx = thing.body:getLinearVelocity()
@@ -422,6 +440,9 @@ function love.update(dt)
                     sounds.drop_oxygen:setPitch(math.random(90, 110)/100)
                     sounds.drop_oxygen:play()
                 end
+            end
+            if thing.typ == "virus" then
+                thing.body:applyForce(love.math.random(-30000, 30000), love.math.random(-30000, 30000))
             end
 
             if thing.typ == "red" and not thing.hasOxygen then
@@ -652,6 +673,8 @@ function love.draw()
                 else
                     love.graphics.draw(images.blutiempty, x, y, 0, f*thing.flip, f, images.blutiempty:getWidth()/2, images.blutiempty:getHeight()/2)
                 end
+            elseif thing.typ == "virus" then
+                love.graphics.draw(thing.image, x, y, 0, f, f, thing.image:getWidth()/2, thing.image:getHeight()/2)
             elseif thing.typ == "bubble" then
                 love.graphics.draw(images.bubble, x, y, 0, f, f, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
             elseif thing.typ == "oxystation" then
