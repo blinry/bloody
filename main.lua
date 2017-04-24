@@ -7,7 +7,7 @@ Timer = require "hump.timer"
 Camera = require "hump.camera"
 
 max_oxygen = 400
-bubble_oxygen = 10
+bubble_oxygen = 13
 
 -- convert HSL to RGB (input and output range: 0 - 255)
 function HSL(h, s, l, a)
@@ -212,8 +212,8 @@ function initGame()
 
     quests[8] = {organ="F", before={
         "Okay, class! Welcome to your first day in the blood stream! To your left is the heart, where all our journeys begin and end. If any of you gets lost, we'll meet back here, alright?",
-        "Also, there might be more cells joining us later in the day. Be nice to them!",
-        "Alright. attention, everyone! Our human is about to wake up! First, she will need some energy in her legs, to get up and walk to work! Everybody pick up some oxygen from Mr Lung! Then, follow me allll the way down!"
+        --"Also, there might be more cells joining us later in the day. Be nice to them!",
+        "And now: Attention, everyone! Our human is about to wake up! First, she will need some energy in her legs, to get up and walk to work! Everybody pick up some oxygen from Mr Lung! Then, follow me allll the way down!"
     }, after={
         "Nicely done! Thanks to you, our human got to work on time, even though she left a little late. You're all doing a really great job! Yay!"
     }}
