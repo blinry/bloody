@@ -279,6 +279,7 @@ function initGame()
         organ.remaining = 100
         organ.alive = true
     end
+    organs["F"].remaining = max_oxygen
 
     tilesize = 3000
     parseWorld("level.txt")
@@ -539,10 +540,7 @@ end
 
 function love.mousepressed(x, y, button, touch)
     if button == 1 then
-
-    end
-    if button == 2 then
-
+        love.keypressed("space") -- :D
     end
 end
 
@@ -787,7 +785,7 @@ function love.draw()
             --alpha = 0.5+0.5*math.sin(love.timer.getTime()*5)
             love.graphics.setColor(175, 175, 236)--, alpha*255)
             love.graphics.setFont(subtitle_font)
-            love.graphics.printf("Press Enter to start!", 0, height - 200, width, "center")
+            love.graphics.printf("Press Space to start!", 0, height - 200, width, "center")
         end
       elseif mode == "gameover" then
         braindead = not organs["B"].alive
@@ -807,7 +805,7 @@ function love.draw()
         end
         if good_shape then
           gshape_string = "... "..good_shape
-          love.graphics.printf("At least we took good care of her "..gshape_string.."!\nPress Enter to return to the title screen.",0,400, width, "center")
+          love.graphics.printf("At least we took good care of her "..gshape_string.."!\nPress Space to return to the title screen.",0,400, width, "center")
         end
 
       end
