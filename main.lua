@@ -578,10 +578,10 @@ function love.keypressed(key)
         camera:zoomTo(zoom)
         intro_music = music.intro:play()
         sounds.pick_up_oxygen:setVolume(.2)
-    elseif key == "-" and debug then
-        zoom = zoom/2
-    elseif key == "+" and debug then
-        zoom = zoom*2
+    --elseif key == "-" and debug then
+    --    zoom = zoom/2
+    --elseif key == "+" and debug then
+    --    zoom = zoom*2
     elseif (key == "return" or key == "space") and mode == "title" then
         mode = "game"
 
