@@ -108,11 +108,13 @@ function love.load()
     music.intro:setVolume(.3)
     music.party:setVolume(.3)
 
-    fontsize = 50
+    fontsizes = {30, 50}
     fonts = {}
     for i,filename in pairs(love.filesystem.getDirectoryItems("fonts")) do
         fonts[filename:sub(1,-5)] = {}
-        fonts[filename:sub(1,-5)][fontsize] = love.graphics.newFont("fonts/"..filename, fontsize)
+        for i,fontsize in ipairs(fontsizes) do
+          fonts[filename:sub(1,-5)][fontsize] = love.graphics.newFont("fonts/"..filename, fontsize)
+        end
     end
 
     love.physics.setMeter(100)
@@ -124,7 +126,8 @@ function love.load()
     zoom = 0.25
     camera:zoomTo(zoom)
 
-    large_font = fonts.unkempt[fontsize]
+    large_font = fonts.unkempt[50]
+    organ_font = fonts.unkempt[30]
     small_font = love.graphics.newFont(18)
 
     love.graphics.setFont(large_font)
@@ -480,24 +483,26 @@ function display_organ_notification(x, y, organ, title_callback)
     return
   end
 
+  local thumbnail_size = 50
+  local box_height = thumbnail_size + 20
+
   local old_r, old_g, old_b, old_a = love.graphics.getColor()
   local old_font = love.graphics.getFont()
 
   love.graphics.setColor(0, 0, 0, 150)
-  love.graphics.rectangle("fill", x, y, 325, 90, 5)
+  love.graphics.rectangle("fill", x, y, 4 * box_height, box_height, 5)
 
   love.graphics.setColor(255, 255, 255, 255)
 
   if organ.image then
-    local thumbnail_size = 70
     love.graphics.draw(organ.image, x + 10, y + 10, 0, thumbnail_size / organ.image:getWidth())
   end
 
   love.graphics.setFont(small_font)
-  title_callback(x + 90, y + 10)
+  title_callback(x + thumbnail_size + 20, y + 10)
 
-  love.graphics.setFont(large_font)
-  love.graphics.printf(organ.name, x + 90, y + 30, 1000, "left")
+  love.graphics.setFont(organ_font)
+  love.graphics.printf(organ.name, x + thumbnail_size + 20, y + 30, 1000, "left")
 
   love.graphics.setColor(old_r, old_g, old_b, old_a)
   love.graphics.setFont(old_font)
@@ -614,13 +619,14 @@ function love.draw()
                     sounds.pick_up_oxygen:setVolume(.2)
                 end
                 min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
-                display_organ_notification(945, y, organ, function (title_x, title_y)
+                display_organ_notification(990, y, organ, function (title_x, title_y)
                     local old_r, old_g, old_b, old_a = love.graphics.getColor()
 
                     local bar_width = remaining
 
                     if remaining > 100 then
                         love.graphics.setColor(0, 255, 0)
+                        bar_width = 100 + math.min(100, remaining / 5)
                     elseif remaining > 50 then
                         love.graphics.setColor(255 * (100 - remaining) / 50, 255, 0)
                     elseif remaining > 20 then
@@ -634,7 +640,7 @@ function love.draw()
 
                     love.graphics.setColor(old_r, old_g, old_b, old_a)
                 end)
-                y = y+95
+                y = y+75
             end
         end
 
