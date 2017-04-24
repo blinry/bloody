@@ -18,10 +18,10 @@ function parseWorld(filename)
     level = {}
     level.tiles = {}
 
-    for i = 1,30 do
+    for i = 1,25 do
         level.tiles[i] = {}
 
-        for j = 1,50 do
+        for j = 1,40 do
             level.tiles[i][j] = {typ="empty"}
         end
     end

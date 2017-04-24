@@ -176,6 +176,15 @@ function createThing(x, y, typ, this_world)
     return thing
 end
 
+function spawnThing(img)
+    success = false
+    while not success do
+        x = math.random(1,25)
+        y = math.random(1,40)
+        --level.tiles[x][y]
+    end
+end
+
 function createPath(points)
     prev = nil
     for i, point in pairs(points) do
@@ -240,7 +249,11 @@ function initGame()
         "Eeew, someone sneezed at our human! Be careful to avoid the viruses, they will steal your bubbles! [These don't actually exist yet.]"
     }, after={
         ""
-    }}
+    },
+    --action = function ()
+    --    spawnThing(images.Virus1)
+    --end
+    }
 
     quests[20] = {organ="L", before={
         "Work's over, so the rest of the day should be easy! ...",
@@ -254,7 +267,10 @@ function initGame()
         "Thanks for playing \"A Bloody Small World\"! <3"
     }, after={
         ""
-    }}
+    },
+    action = function()
+        organs["B"].image = images.Win
+    end}
 
     currentQuest = nil
 
@@ -322,6 +338,9 @@ function love.update(dt)
                 currentQuest = q
                 quests[math.floor(time)] = nil
                 box:textAppear(currentQuest.before)
+                if currentQuest.action then
+                    currentQuest.action()
+                end
                 if q.organ then
                     organs[q.organ].displayed = true
                 end
