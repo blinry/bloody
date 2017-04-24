@@ -188,6 +188,7 @@ function wallipyTiles()
       if level.tiles[x][y].typ == "start" then
           startX = (x+0.5)*tilesize
           startY = (y+0.5)*tilesize
+          level.tiles[x][y].typ = "right"
       end
 
       if level.tiles[x][y].typ == "B" then
@@ -232,7 +233,7 @@ function wallipyTiles()
           if not organs["F"].pos then
               organs["F"].pos = {x, y}
               organs["F"].image = images.feet
-              organs["F"].rot = math.pi
+              organs["F"].rot = 0
           end
       end
 
@@ -366,7 +367,7 @@ function wallipyTiles()
 end
 
 function getStream(x, y)
-    local ff = 40000
+    local ff = 30000
     typ = level.tiles[math.floor(x/tilesize)][math.floor(y/tilesize)].typ
     if typ == "up" then
         return 0, -ff
