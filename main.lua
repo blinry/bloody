@@ -231,7 +231,7 @@ function initGame()
     }}
 
     quests[16] = {organ="C", before={
-        "Attention, class! Remember that lunch from earlier? We're now needed in the bowel! Don't worry, this will be a fun ride! I think they even take a picture at the end, so put on your cutest smile!"
+        "Attention, class! Remember that lunch from earlier? We're now needed in the intestines! Don't worry, this will be a fun ride! I think they even take a picture at the end, so put on your cutest smile!"
     }, after={
         "There is even a booth where you can buy your photo!"
     }}
@@ -270,7 +270,7 @@ function initGame()
     organs["F"] = {key="F", name = "Feet"}
     organs["B"] = {key="B", name = "Brain"}
     organs["S"] = {key="S", name = "Stomach"}
-    organs["C"] = {key="C", name = "Bowel"}
+    organs["C"] = {key="C", name = "Intestines"}
     organs["L"] = {key="L", name = "Liver"}
     organs["H"] = {key="H", name = "Heart", immune = true}
     organs["O"] = {key="O", name = "Lung", immune = true}

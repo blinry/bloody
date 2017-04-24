@@ -35,7 +35,7 @@
             ^F
 ---
 lv <Right_lung >Left_lung
-c< <Bowel vFeet
+c< <Intestines vFeet
 h> >Heart
 b< ^Brain vOrgans_&_lower_body
 s< <Stomach
