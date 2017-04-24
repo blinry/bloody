@@ -484,7 +484,7 @@ function display_organ_notification(x, y, organ, title_callback)
   local old_font = love.graphics.getFont()
 
   love.graphics.setColor(0, 0, 0, 150)
-  love.graphics.rectangle("fill", x, y, 350, 90, 5)
+  love.graphics.rectangle("fill", x, y, 325, 90, 5)
 
   love.graphics.setColor(255, 255, 255, 255)
 
@@ -614,7 +614,7 @@ function love.draw()
                     sounds.pick_up_oxygen:setVolume(.2)
                 end
                 min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
-                display_organ_notification(920, y, organ, function (title_x, title_y)
+                display_organ_notification(945, y, organ, function (title_x, title_y)
                     local old_r, old_g, old_b, old_a = love.graphics.getColor()
 
                     local bar_width = remaining
