@@ -437,7 +437,7 @@ function love.update(dt)
                 if organ and not organ.immune and organ.displayed and organ.remaining+bubble_oxygen < max_oxygen then
                     thing.hasOxygen = false
                     organ.remaining = math.min(max_oxygen, organ.remaining + bubble_oxygen)
-                    sounds.drop_oxygen:setPitch(math.random(90, 110)/100)
+                    sounds.drop_oxygen:setPitch(math.random(70, 130)/100)
                     sounds.drop_oxygen:play()
                 end
             end
