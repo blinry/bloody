@@ -348,7 +348,7 @@ function love.update(dt)
         world:update(dt)
 
         if not paused then
-            time = time+dt*(16/(10*60))*1000
+            time = time+dt*(16/(10*60))
             q = quests[math.floor(time)]
             if q then
                 currentQuest = q
