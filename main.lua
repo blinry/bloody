@@ -7,6 +7,7 @@ Timer = require "hump.timer"
 Camera = require "hump.camera"
 
 max_oxygen = 200
+bubble_oxygen = 5
 
 -- convert HSL to RGB (input and output range: 0 - 255)
 function HSL(h, s, l, a)
@@ -391,9 +392,9 @@ function love.update(dt)
             if thing.typ == "red" and thing.hasOxygen then
                 x, y = thing.body:getPosition()
                 organ = getOrgan(x, y)
-                if organ and not organ.immune then
+                if organ and not organ.immune and organ.displayed and organ.remaining+bubble_oxygen < max_oxygen then
                     thing.hasOxygen = false
-                    organ.remaining = math.min(max_oxygen, organ.remaining + 10)
+                    organ.remaining = math.min(max_oxygen, organ.remaining + bubble_oxygen)
                     sounds.drop_oxygen:setPitch(math.random(90, 110)/100)
                     sounds.drop_oxygen:play()
                 end
