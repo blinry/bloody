@@ -11,6 +11,7 @@ function parseWorld(filename)
     legend["H"] = "H"
     legend["B"] = "B"
     legend["S"] = "S"
+    legend["L"] = "L"
     legend["C"] = "C"
     legend["F"] = "F"
 
@@ -200,6 +201,39 @@ function wallipyTiles()
               organs["H"].image = images.herz
           end
       end
+
+      if level.tiles[x][y].typ == "S" then
+          if not organs["S"].pos then
+              organs["S"].pos = {x, y}
+              organs["S"].image = images.organ
+              organs["S"].rot = math.pi
+          end
+      end
+
+      if level.tiles[x][y].typ == "L" then
+          if not organs["L"].pos then
+              organs["L"].pos = {x, y}
+              organs["L"].image = images.organ
+              organs["L"].rot = math.pi/2*3
+          end
+      end
+
+      if level.tiles[x][y].typ == "C" then
+          if not organs["C"].pos then
+              organs["C"].pos = {x, y}
+              organs["C"].image = images.organ
+              organs["C"].rot = 0
+          end
+      end
+
+      if level.tiles[x][y].typ == "F" then
+          if not organs["F"].pos then
+              organs["F"].pos = {x, y}
+              organs["F"].image = images.organ
+              organs["F"].rot = 0
+          end
+      end
+
       if level.tiles[x][y].typ == "O" then
           if not organs["O"].pos then
               organs["O"].pos = {x, y}
@@ -360,7 +394,10 @@ function drawLevel()
     end
     for symbol, organ in pairs(organs) do
         if organ.pos then
-            love.graphics.draw(organ.image, organ.pos[1]*tilesize, organ.pos[2]*tilesize, 0, 3, 3)
+            if not organ.rot then
+                organ.rot = 0
+            end
+            love.graphics.draw(organ.image, (organ.pos[1]+0.5)*tilesize, (organ.pos[2]+0.5)*tilesize, organ.rot, 3, 3, tilesize/2/3, tilesize/2/3)
         end
     end
 end

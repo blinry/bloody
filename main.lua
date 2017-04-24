@@ -209,6 +209,7 @@ function initGame()
     organs["S"] = {name = "Stomach"}
     organs["F"] = {name = "Feet"}
     organs["C"] = {name = "Colon"}
+    organs["L"] = {name = "Liver"}
     organs["H"] = {name = "Heart", immune = true}
     organs["O"] = {name = "Lung", immune = true}
 
