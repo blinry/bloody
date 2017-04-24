@@ -78,6 +78,7 @@ function Quest:textAppear(inputtext)
   self.textarray = inputtext
   self.toDraw = true
   self.drawTimer = love.timer.getTime()
+  self.textstate = 1
 
 end
 

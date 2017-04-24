@@ -199,25 +199,79 @@ function createWall(x1, y1, x2, y2)
 end
 
 function initGame()
+    time = 8 --o'clock
+    paused = false
+
     walls = {}
     things = {}
 
     quests = {}
-    quest = Quest.create("abc", 1000, "cde")
-    quest:textAppear({"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."})
-    table.insert(quests, quest)
+
+    quests[8] = {organ="F", before={
+        "Okay, class! Welcome to your first day in the blood stream! This is the heart, where all our journeys begin and end. If any of you gets lost, we'll meet back here, alright?",
+        "Also, there might be more cells joining us later in the day. Be nice to them!",
+        "Alright. attention, everyone! Our human is about to wake up! First, she will need some energy in her legs, to get up and walk to work! Everybody pick up some oxygen from Mr Lung! Then, follow me allll the way down!"
+    }, after={
+        "Nicely done! Thanks to you, our human got to work on time, even though she left a little late. You're all doing a really great job! Yay!"
+    }}
+
+    quests[10] = {organ="B", before={
+        "Next: Heavy office work coming up! Let's get some oxygen to the brain! We've discussed before that we have a huge responsibility here, right? Without us, none of the other organs would be able to function!"
+    }, after={
+        "Good job, class! The grey matter seems to be running smoothly!\n--- HEY, YOU THERE, IN THE BACK, what are you doing with that dirty thought? Put it back! Jeez!"
+    }}
+
+    quests[12] = {organ="S", before={
+        "Are you cells hungry? Let's go to the stomach for a lunch break! Our human should gulp down some food soon, as well, and will need the oxygen!"
+    }, after={
+        "Ewww, what is that? Spinach? Our human certainly has a weird taste. Well."
+    }}
+
+    quests[16] = {organ="C", before={
+        "Attention, class! Remember that lunch from earlier? We're now needed in the bowel! Don't worry, this will be a fun ride! I think they even take a picture at the end, so put on your cutest smile!"
+    }, after={
+        "(to write)"
+    }}
+
+    quests[18] = {organ=nil, before={
+        "Eeew, someone sneezed at our human! Be careful to avoid the viruses, they will steal your bubbles!"
+    }, after={
+        ""
+    }}
+
+    quests[20] = {organ=nil, before={
+        "Work's over, so the rest of the day should be easy! ...",
+        "Oh, I just got an emergency report: Our human started drinking cocktails! Quickly, everyone, follow me to the liver!"
+    }, after={
+        "Wow, look at all these nice colors! She must have drunken a Grasshopper, and a Tequila Sunrise, and a... Bloody Mary? Huh. Not sure how I feel about this. I hope our human gets back home safely."
+    }}
+
+    quests[24] = {organ=nil, before={
+        "We did it, class! Our human is asleep. Good job! Let's go visit the dream cinema, I hear they will play a good horror movie tonight! And tomorrow, we'll do an excursion to the outside of the body!",
+        "Thanks for playing \"A Bloody Small World\"! <3"
+    }, after={
+        ""
+    }}
+
+
+    currentQuest = nil
+
+    box = Quest.create("?", 99999999999999, "?")
+    --walk = Quest.create("F",
+    --walk:textAppear({"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."})
+    --table.insert(quests, quest)
 
     game_points = 0
     mode = "title"
 
     organs = {}
-    organs["B"] = {name = "Brain"}
-    organs["S"] = {name = "Stomach"}
-    organs["F"] = {name = "Feet"}
-    organs["C"] = {name = "Colon"}
-    organs["L"] = {name = "Liver"}
-    organs["H"] = {name = "Heart", immune = true}
-    organs["O"] = {name = "Lung", immune = true}
+    organs["B"] = {key="B", name = "Brain"}
+    organs["S"] = {key="S", name = "Stomach"}
+    organs["F"] = {key="F", name = "Feet"}
+    organs["C"] = {key="C", name = "Colon"}
+    organs["L"] = {key="L", name = "Liver", immune = true}
+    organs["H"] = {key="H", name = "Heart", immune = true}
+    organs["O"] = {key="O", name = "Lung", immune = true}
 
     tilesize = 3000
     parseWorld("level.txt")
@@ -252,6 +306,26 @@ function love.update(dt)
 
     if mode == "game" then
         world:update(dt)
+
+        if not paused then
+            time = time+dt*(10/(16*60))
+            q = quests[math.floor(time)]
+            if q then
+                currentQuest = q
+                quests[math.floor(time)] = nil
+                box:textAppear(currentQuest.before)
+                if q.organ then
+                    organs[q.organ].displayed = true
+                end
+            end
+        end
+
+        x, y = player.body:getPosition()
+        organ = getOrgan(x, y)
+        if organ and currentQuest and organ.key == currentQuest.organ then
+            box:textAppear(currentQuest.after)
+            currentQuest = nil
+        end
 
         if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
             player.body:applyForce(ff2, 0, 0, 0)
@@ -428,9 +502,7 @@ function love.keypressed(key)
         sounds.pick_up_oxygen:setVolume(.5)
     end
 
-    for i, quest in pairs(quests) do
-      quest:inputHandle(key)
-    end
+    box:inputHandle(key)
     camera:zoomTo(zoom)
 end
 
@@ -590,9 +662,7 @@ function love.draw()
         camera:detach()
         -- draw UI
 
-        for i, quest in pairs(quests) do
-          quest:draw()
-        end
+        box:draw()
 
         love.graphics.setNewFont(50)
 
@@ -607,7 +677,7 @@ function love.draw()
 
         y = 10
         for symbol, organ in pairs(organs) do
-            if not organ.immune then
+            if not organ.immune and organ.displayed then
                 now = love.timer.getTime()
                 remaining = math.ceil(organ.deadline-now)
                 if remaining < 1 then
@@ -643,6 +713,12 @@ function love.draw()
                 y = y+75
             end
         end
+
+        hours = math.floor(time) % 24
+        minutes = math.floor((time-math.floor(time))*60)
+        width = love.graphics.getDimensions()
+
+        love.graphics.printf(string.format("%02d:%02d", hours, minutes), 0, 20, width, "center")
 
         heart_beat_rate = 1.0 + math.max(0, 100 - min_remaining_oxygen) / 100.0
         heart_beat:setPitch(heart_beat_rate)
