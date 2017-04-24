@@ -318,6 +318,20 @@ function love.update(dt)
                     organs[q.organ].displayed = true
                 end
             end
+
+            for i, organ in pairs(organs) do
+                if organ.displayed then
+                    organ.remaining = organ.remaining - dt
+                    if organ.remaining <= 0 then
+                        organ.alive = false
+                        mode = "gameover"
+                        game_music:stop()
+                        heart_beat:stop()
+                        game_over_music = music.blues:play()
+                        sounds.pick_up_oxygen:setVolume(.2)
+                    end
+                end
+            end
         end
 
         x, y = player.body:getPosition()
@@ -377,7 +391,7 @@ function love.update(dt)
                 organ = getOrgan(x, y)
                 if organ and not organ.immune then
                     thing.hasOxygen = false
-                    organ.deadline = organ.deadline + 30
+                    organ.remaining = organ.remaining + 10
                     sounds.drop_oxygen:setPitch(math.random(90, 110)/100)
                     sounds.drop_oxygen:play()
                 end
@@ -401,8 +415,7 @@ function love.update(dt)
 
         for symbol, organ in pairs(organs) do
             now = love.timer.getTime()
-            remaining = math.ceil(organ.deadline-now)
-            if remaining <= 0 then
+            if organ.remaining <= 0 then
                 -- game over
             end
         end
@@ -491,7 +504,7 @@ function love.keypressed(key)
         mode = "game"
 
         for name, organ in pairs(organs) do
-            organ.deadline = love.timer.getTime() + math.random(120,240)
+            organ.remaining = 10
             organ.alive = true
         end
 
@@ -679,15 +692,7 @@ function love.draw()
         for symbol, organ in pairs(organs) do
             if not organ.immune and organ.displayed then
                 now = love.timer.getTime()
-                remaining = math.ceil(organ.deadline-now)
-                if remaining < 1 then
-                    organ.alive = false
-                    mode = "gameover"
-                    game_music:stop()
-                    heart_beat:stop()
-                    game_over_music = music.blues:play()
-                    sounds.pick_up_oxygen:setVolume(.2)
-                end
+                remaining = organ.remaining
                 min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
                 display_organ_notification(990, y, organ, function (title_x, title_y)
                     local old_r, old_g, old_b, old_a = love.graphics.getColor()
@@ -773,9 +778,8 @@ function love.draw()
         time = 0
         now = love.timer.getTime()
         for symbol, organ in pairs(organs) do
-          if organ.deadline - now > time then
+          if organ.remaining > 0 then
             good_shape = organ.name
-            time = organ.deadline - now
           end
         end
         love.graphics.setColor(255,255,255)
@@ -786,7 +790,7 @@ function love.draw()
         end
         if good_shape then
           gshape_string = "... "..good_shape
-          love.graphics.printf("At least you took good care about your "..gshape_string,0,300, width, "center")
+          love.graphics.printf("At least you took good care of your "..gshape_string,0,300, width, "center")
         end
 
       end
