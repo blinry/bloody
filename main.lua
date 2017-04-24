@@ -111,7 +111,7 @@ function love.load()
     music.intro:setVolume(.3)
     music.party:setVolume(.3)
 
-    fontsizes = {25, 30, 40, 50, 100}
+    fontsizes = {25, 30, 40, 50, 100, 150}
     fonts = {}
     for i,filename in pairs(love.filesystem.getDirectoryItems("fonts")) do
         fonts[filename:sub(1,-5)] = {}
@@ -646,7 +646,7 @@ function love.draw()
             end
         end
 
-        love.graphics.setNewFont(150)
+        love.graphics.setFont(fonts.baloo[150])
         for i, sign in pairs(signs) do
             if sign.ox then
                 sx = (sign.pos[1]+0.5)*tilesize+sign.ox
@@ -696,7 +696,7 @@ function love.draw()
 
         box:draw()
 
-        love.graphics.setNewFont(50)
+        love.graphics.setFont(fonts.baloo[50])
 
         x, y = player.body:getPosition()
         organ = getOrgan(x, y)
