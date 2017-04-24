@@ -12,7 +12,7 @@ function Quest:create(questgiver, timer)
   que.toDraw = false
   que.drawTimer = love.timer.getTime()
   que.appearTime = 0.5
-  que.font = fonts.baloo[25]
+  que.font = fonts.baloo[30]
   return que
 end
 
@@ -39,18 +39,18 @@ function Quest:draw()
   end
 
   x = (1260/2) - rectanglePercent * ((1260/2)-10)
-  y = (200/2) - rectanglePercent * ((200/2)-10) + 500
+  y = (200/2) - rectanglePercent * ((200/2)-10) + 630
 
-  rectangleAppear({255,255,255}, {0,0,0}, x, y, 1260 * rectanglePercent, 200 * rectanglePercent)
+  rectangleAppear({255,255,255}, {0,0,0}, x, y, 1260 * rectanglePercent, 70 * rectanglePercent)
 
   old_font = love.graphics.getFont()
   love.graphics.setFont(self.font)
 
   if love.timer.getTime() - self.drawTimer > self.appearTime then
-    love.graphics.printf(self.textarray[self.textstate], 25, 525, 1235, "center")
+    love.graphics.printf(self.textarray[self.textstate], 35, 650, 1235, "left")
 
     if self.textstate < #self.textarray then
-      local vertices = {1210, 650, 1210, 675, 1235, 663}
+      local vertices = {1225, 665, 1225, 690, 1250, 678}
       love.graphics.polygon('fill', vertices) 
     end
   end

@@ -230,53 +230,76 @@ function initGame()
     quests = {}
 
     quests[8] = {organ="F", before={
-        "Okay, class! Welcome to your first day in the blood stream! To your left is the heart, where all our journeys begin and end. If any of you gets lost, we'll meet back here, alright?",
-        --"Also, there might be more cells joining us later in the day. Be nice to them!",
-        "And now: Attention, everyone! Our human is about to wake up! First, she will need some energy in her legs, to get up and walk to work! Everybody pick up some oxygen from Mr Lung! Then, follow me allll the way down!"
+        "Okay, class! Welcome to your first day in the blood stream!",
+        "To your right is the heart, where all our journeys begin and end.",
+        "Remember, if you see a colorful thing in the bloodstream:",
+        "They are not dangerous! ... not to us.",
+        "And now: Attention, everyone! Our human is about to wake up!",
+        "First, she will need some energy in her legs, to get up and walk to work!",
+        "Everybody pick up some oxygen from Mr Lung!",
+        "Then, follow me allll the way down!"
     }, after={
-        "Nicely done! Thanks to you, our human got to work on time, even though she left a little late. You're all doing a really great job! Yay!"
+        "Nicely done! Thanks to you, our human got to work on time!",
+        "Even though she left a little late.",
+        "You're all doing a really great job, by the way! Yay!"
     }}
 
     quests[10] = {organ="B", before={
-        "Next: Heavy office work coming up! Let's get some oxygen to the brain! We've discussed before that we have a huge responsibility here, right? Without us, none of the other organs would be able to function!"
+        "Next: Heavy office work coming up! Let's get some oxygen to the brain!",
+        "We've discussed before that we have a huge responsibility here, right?",
+        "Without us, none of the other organs would be able to function!"
     }, after={
-        "Good job, class! The grey matter seems to be running smoothly!\n--- HEY, YOU THERE, IN THE BACK, what are you doing with that dirty thought? Put it back! Jeez!"
+        "Good job, class! The grey matter seems to be running smoothly!",
+        "HEY, YOU THERE, IN THE BACK, what are you doing with that dirty thought?",
+        "Put it back! Jeez!"
     }}
 
     quests[12] = {organ="S", before={
-        "Are you cells hungry? Let's go to the stomach for a lunch break! Our human should gulp down some food soon, as well, and will need the oxygen!"
+        "Are you cells hungry? Let's go to the stomach for a lunch break!",
+        "Our human should gulp down some food soon, as well, and will need the oxygen!"
     }, after={
         "Ewww, what is that? Spinach? Our human certainly has a weird taste. Well."
     }}
 
     quests[16] = {organ="C", before={
-        "Attention, class! Remember that lunch from earlier? We're now needed in the intestines! Don't worry, this will be a fun ride! I think they even take a picture at the end, so put on your cutest smile!"
+        "Attention, class! Remember that lunch from earlier?",
+        "We're now needed in the intestines! Don't worry, this will be a fun ride!",
+        "I think they even take a picture at the end, so put on your cutest smile!"
     }, after={
         "There is even a booth where you can buy your photo!"
     }}
 
-    quests[18] = {organ=nil, before={
-        "Eeew, someone sneezed at our human! Be careful to avoid the viruses, they will steal your bubbles! [These don't actually exist yet.]"
-    }, after={
-        ""
-    },
-    action = function ()
-        --for i=1,10 do
-        --    spawnThing("virus")
-        --end
-    end
-    }
+    --quests[18] = {organ=nil, before={
+    --    "Eeew, someone sneezed at our human! Be careful to avoid the viruses, they will steal your bubbles! [These don't actually exist yet.]"
+    --}, after={
+    --    ""
+    --},
+    --action = function ()
+    --    --for i=1,10 do
+    --    --    spawnThing("virus")
+    --    --end
+    --end
+    --}
 
     quests[20] = {organ="L", before={
         "Work's over, so the rest of the day should be easy! ...",
-        "Oh, I just got an emergency report: Our human started drinking cocktails! Quickly, everyone, follow me to the liver!"
+        "Oh, I just got an emergency report:",
+        "Our human started drinking cocktails!",
+        "Quickly, everyone, follow me to the liver!"
     }, after={
-        "Wow, look at all these nice colors! She must have drunken a Grasshopper, and a Tequila Sunrise, and a... Bloody Mary? Huh. Not sure how I feel about this. I hope our human gets back home safely."
+        "Wow, look at all these nice colors!",
+        "She must have drunken a Grasshopper, and a Tequila Sunrise, and...",
+        "... a Bloody Mary? Huh. Not sure how I feel about this.",
+        "I hope our human gets back home safely."
     }}
 
     quests[24] = {organ=nil, before={
-        "We did it, class! Our human is asleep. Good job! Let's go visit the dream cinema, I hear they will play a good horror movie tonight! And tomorrow, we'll do an excursion to the outside of the body!",
-        "Thanks for playing \"A Bloody Small World\"! <3"
+        "We did it, class! Our human is asleep. Good job!",
+        "Let's go visit the dream cinema, I hear they will play a good horror movie tonight!",
+        "And tomorrow, we'll do an excursion to the outside of the body!",
+        "--- You've made it to the end of this game! --- ",
+        "As a reward, we've hidden a little easter egg in the level - can you find it? :)",
+        "Thanks for playing \"A Bloody Small World\"! <3",
     }, after={
         ""
     },
@@ -287,9 +310,6 @@ function initGame()
     currentQuest = nil
 
     box = Quest.create("?", 99999999999999, "?")
-    --walk = Quest.create("F",
-    --walk:textAppear({"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.", "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."})
-    --table.insert(quests, quest)
 
     game_points = 0
     mode = "title"
@@ -779,7 +799,7 @@ function love.draw()
         width = love.graphics.getDimensions()
 
         love.graphics.setFont(subtitle_font)
-        love.graphics.printf(string.format("It's %02d:%02d.", hours, minutes), 0, 20, width, "center")
+        love.graphics.printf(string.format("The time is %02d:%02d.", hours, minutes), 0, 20, width, "center")
 
         heart_beat_rate = 1.0 + math.max(0, 100 - min_remaining_oxygen) / 100.0
         heart_beat:setPitch(heart_beat_rate)
