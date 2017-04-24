@@ -253,15 +253,15 @@ function wallipyTiles()
       --end
 
       if level.tiles[x][y].typ ~= "empty" then
-          l = isNotDirOrEmpty(level.tiles[x-1][y].typ) or level.tiles[x-1][y].typ == "right" or level.tiles[x][y].typ == "left" or (isNotDirOrEmpty(level.tiles[x][y].typ) and level.tiles[x-1][y].typ ~= "empty")
-          r = isNotDirOrEmpty(level.tiles[x+1][y].typ) or level.tiles[x+1][y].typ == "left" or level.tiles[x][y].typ == "right" or (isNotDirOrEmpty(level.tiles[x][y].typ) and level.tiles[x+1][y].typ ~= "empty")
+          l = not (level.tiles[x][y].typ == "O" and level.tiles[x-1][y].typ == "O") and not (level.tiles[x][y].typ == "H" and level.tiles[x-1][y].typ == "H") and (isNotDirOrEmpty(level.tiles[x-1][y].typ) or level.tiles[x-1][y].typ == "right" or level.tiles[x][y].typ == "left" or (isNotDirOrEmpty(level.tiles[x][y].typ) and level.tiles[x-1][y].typ ~= "empty"))
+          r = not (level.tiles[x][y].typ == "O" and level.tiles[x+1][y].typ == "O") and not (level.tiles[x][y].typ == "H" and level.tiles[x+1][y].typ == "H") and (isNotDirOrEmpty(level.tiles[x+1][y].typ) or level.tiles[x+1][y].typ == "left" or level.tiles[x][y].typ == "right" or (isNotDirOrEmpty(level.tiles[x][y].typ) and level.tiles[x+1][y].typ ~= "empty"))
           t = isNotDirOrEmpty(level.tiles[x][y-1].typ) or level.tiles[x][y-1].typ == "down" or level.tiles[x][y].typ == "up" or (isNotDirOrEmpty(level.tiles[x][y].typ) and level.tiles[x][y-1].typ ~= "empty")
           b = isNotDirOrEmpty(level.tiles[x][y+1].typ) or level.tiles[x][y+1].typ == "up" or level.tiles[x][y].typ == "down" or (isNotDirOrEmpty(level.tiles[x][y].typ) and level.tiles[x][y+1].typ ~= "empty")
 
-          --tl = level.tiles[x-1][y-1].typ ~= "empty"
-          --tr = level.tiles[x+1][y-1].typ ~= "empty"
-          --bl = level.tiles[x-1][y+1].typ ~= "empty"
-          --br = level.tiles[x+1][y+1].typ ~= "empty"
+          tl = isNotDirOrEmpty(level.tiles[x-1][y-1].typ)
+          tr = isNotDirOrEmpty(level.tiles[x+1][y-1].typ)
+          bl = isNotDirOrEmpty(level.tiles[x-1][y+1].typ)
+          br = isNotDirOrEmpty(level.tiles[x+1][y+1].typ)
 
           if t and r and not tr then
               createCirclePath((1+x)*tilesize, (0+y)*tilesize, 0.25*tilesize, 25, 1.0*math.pi, 1.5*math.pi)

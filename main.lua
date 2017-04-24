@@ -545,9 +545,9 @@ function love.draw()
         --love.graphics.setLineWidth(50)
         --love.graphics.setColor(200, 0, 0)
 
-        --for i, wall in pairs(walls) do
-        --    love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
-        --end
+        for i, wall in pairs(walls) do
+            love.graphics.line(wall.x1, wall.y1, wall.x2, wall.y2)
+        end
 
         --love.graphics.setColor(255, 255, 255)
 
