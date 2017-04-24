@@ -7,7 +7,7 @@ Timer = require "hump.timer"
 Camera = require "hump.camera"
 
 max_oxygen = 400
-bubble_oxygen = 13
+bubble_oxygen = 10
 
 -- convert HSL to RGB (input and output range: 0 - 255)
 function HSL(h, s, l, a)
@@ -231,7 +231,7 @@ function initGame()
 
     quests[8] = {organ="F", before={
         "Okay, class! Welcome to your first day in the blood stream!",
-        "To your right is the heart, where all our journeys begin and end.",
+        "This is the heart, where all our journeys begin and end.",
         "Remember, if you see a colorful thing in the bloodstream:",
         "They are not dangerous! ... not to us.",
         "And now: Attention, everyone! Our human is about to wake up!",
@@ -258,7 +258,9 @@ function initGame()
         "Are you cells hungry? Let's go to the stomach for a lunch break!",
         "Our human should gulp down some food soon, as well, and will need the oxygen!"
     }, after={
-        "Ewww, what is that? Spinach? Our human certainly has a weird taste. Well."
+        "Ewww, what is that? Spinach? Our human certainly has a weird taste. Well.",
+        "Okay, little ones, you know the drill by now.",
+        "Let's keep delivering oxygen to those organs which need it the most!"
     }}
 
     quests[16] = {organ="C", before={
@@ -269,23 +271,22 @@ function initGame()
         "There is even a booth where you can buy your photo!"
     }}
 
-    --quests[18] = {organ=nil, before={
-    --    "Eeew, someone sneezed at our human! Be careful to avoid the viruses, they will steal your bubbles! [These don't actually exist yet.]"
-    --}, after={
-    --    ""
-    --},
-    --action = function ()
-    --    --for i=1,10 do
-    --    --    spawnThing("virus")
-    --    --end
-    --end
-    --}
+    quests[18] = {organ=nil, before={
+        "Eeew, someone sneezed at our human!",
+        "Watch out for more viruses and white blood cells!"
+    },
+    action = function()
+        for i = 1,40 do
+            spawnThing("virus")
+        end
+    end}
 
     quests[20] = {organ="L", before={
         "Work's over, so the rest of the day should be easy! ...",
         "Oh, I just got an emergency report:",
         "Our human started drinking cocktails!",
-        "Quickly, everyone, follow me to the liver!"
+        "Quickly, everyone, follow me to the liver!",
+        "Did you know there is a secret shortcut directly in front of the stomach?"
     }, after={
         "Wow, look at all these nice colors!",
         "She must have drunken a Grasshopper, and a Tequila Sunrise, and...",
@@ -297,8 +298,9 @@ function initGame()
         "We did it, class! Our human is asleep. Good job!",
         "Let's go visit the dream cinema, I hear they will play a good horror movie tonight!",
         "And tomorrow, we'll do an excursion to the outside of the body!",
-        "--- You've made it to the end of this game! --- ",
-        "As a reward, we've hidden a little easter egg in the level - can you find it? :)",
+        "--- Dear player, you've made it to the end of this game! --- ",
+        "If you want, you can keep playing - the game is open-ended.",
+        "Also, can you find the change we just made to this level? :)",
         "Thanks for playing \"A Bloody Small World\"! <3",
     }, after={
         ""
@@ -324,7 +326,7 @@ function initGame()
     organs["O"] = {key="O", name = "Lung", immune = true}
 
     for name, organ in pairs(organs) do
-        organ.remaining = 100
+        organ.remaining = 200
         organ.alive = true
     end
     organs["F"].remaining = max_oxygen
@@ -399,7 +401,7 @@ function love.update(dt)
 
         x, y = player.body:getPosition()
         organ = getOrgan(x, y)
-        if organ and currentQuest and organ.key == currentQuest.organ then
+        if organ and currentQuest and organ.key == currentQuest.organ and currentQuest.after then
             box:textAppear(currentQuest.after)
             currentQuest = nil
         end
