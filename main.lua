@@ -124,7 +124,10 @@ function love.load()
     zoom = 0.25
     camera:zoomTo(zoom)
 
-    love.graphics.setFont(fonts.unkempt[fontsize])
+    large_font = fonts.unkempt[fontsize]
+    small_font = love.graphics.newFont(18)
+
+    love.graphics.setFont(large_font)
     love.graphics.setBackgroundColor(0, 0, 0)
 
     initGame()
@@ -472,6 +475,34 @@ function beginContact(a, b, coll)
     end
 end
 
+function display_organ_notification(x, y, organ, title_callback)
+  if not organ then
+    return
+  end
+
+  local old_r, old_g, old_b, old_a = love.graphics.getColor()
+  local old_font = love.graphics.getFont()
+
+  love.graphics.setColor(0, 0, 0, 150)
+  love.graphics.rectangle("fill", x, y, 350, 90, 5)
+
+  love.graphics.setColor(255, 255, 255, 255)
+
+  if organ.image then
+    love.graphics.rectangle("fill", x + 10, y + 10, 10, 10)
+    love.graphics.draw(organ.image, x + 10, y + 10, 0, 0.035)
+  end
+
+  love.graphics.setFont(small_font)
+  title_callback(x + 90, y + 10)
+
+  love.graphics.setFont(large_font)
+  love.graphics.printf(organ.name, x + 90, y + 30, 1000, "left")
+
+  love.graphics.setColor(old_r, old_g, old_b, old_a)
+  love.graphics.setFont(old_font)
+end
+
 function love.draw()
     love.graphics.setColor(255, 255, 255)
     if mode == "game" then
@@ -562,28 +593,14 @@ function love.draw()
 
         x, y = player.body:getPosition()
         organ = getOrgan(x, y)
-        if organ then
-            love.graphics.setColor(0, 0, 0, 150)
-            love.graphics.rectangle("fill", 20, 15, 350, 90, 5)
-            love.graphics.setColor(255, 255, 255)
 
-            if organ.image then
-              love.graphics.rectangle("fill", 30, 25, 10, 10)
-              love.graphics.draw(organ.image, 30, 25, 0, 0.035)
-            end
-
-            current_font = love.graphics.getFont()
-            
-            love.graphics.setFont(love.graphics.newFont(18))
-            love.graphics.printf("Current position", 110, 20, 1000, "left")
-
-            love.graphics.setFont(current_font)
-            love.graphics.printf(organ.name, 110, 40, 1000, "left")
-        end
+        display_organ_notification(20, 20, organ, function (x, y)
+          love.graphics.printf("Current position", x, y, 1000, "left")
+        end)
 
         min_remaining_oxygen = math.huge
 
-        y = 100
+        y = 120
         for symbol, organ in pairs(organs) do
             if not organ.immune then
                 now = love.timer.getTime()
@@ -603,7 +620,9 @@ function love.draw()
                     love.graphics.setColor(255, 255, 255)
                 end
                 min_remaining_oxygen = math.min(min_remaining_oxygen, remaining)
-                love.graphics.printf(organ.name..": "..remaining, 100, y, 1000, "left")
+                display_organ_notification(20, y, organ, function (title_x, title_y)
+                  love.graphics.printf(remaining, title_x, title_y, 1000, "left")
+                end)
                 y = y+100
             end
         end
