@@ -12,7 +12,7 @@ function Quest:create(questgiver, timer)
   que.toDraw = false
   que.drawTimer = love.timer.getTime()
   que.appearTime = 0.5
-  que.font =  love.graphics.newFont(25)
+  que.font = fonts.baloo[25]
   return que
 end
 
@@ -59,7 +59,7 @@ function Quest:draw()
 end
 
 function Quest:inputHandle(key)
-  if not self.toDraw or key ~= "return" then
+  if not self.toDraw or (key ~= "return" and key ~= "space") then
     return
   end
 

@@ -16,8 +16,8 @@ function initTitle()
         table.insert(title_bubbles, bub)
     end
 
-    title_font = love.graphics.newFont(100)
-    subtitle_font = love.graphics.newFont(40)
+    title_font = fonts.baloo[100]
+    subtitle_font = fonts.baloo[40]
 
     blink = true
     blink_timer = love.timer.getTime()

@@ -111,7 +111,7 @@ function love.load()
     music.intro:setVolume(.3)
     music.party:setVolume(.3)
 
-    fontsizes = {30, 50}
+    fontsizes = {25, 30, 40, 50, 100}
     fonts = {}
     for i,filename in pairs(love.filesystem.getDirectoryItems("fonts")) do
         fonts[filename:sub(1,-5)] = {}
@@ -129,8 +129,8 @@ function love.load()
     zoom = 0.25
     camera:zoomTo(zoom)
 
-    large_font = fonts.unkempt[50]
-    organ_font = fonts.unkempt[30]
+    large_font = fonts.baloo[50]
+    organ_font = fonts.baloo[30]
     small_font = love.graphics.newFont(18)
 
     love.graphics.setFont(large_font)
@@ -255,7 +255,6 @@ function initGame()
     }, after={
         ""
     }}
-
 
     currentQuest = nil
 
@@ -443,11 +442,11 @@ function love.update(dt)
         title_world:update(dt)
 
         if #title_bubbles == 0 then
-          red = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "red", title_world)
+          red = createThing(math.random(-tilesize*2/2, tilesize*2/2), math.random(-tilesize*2/2, tilesize*2/2), "red", title_world)
           red.hasOxygen = false
           table.insert(title_bloodies,red)
 
-          bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
+          bub = createThing(math.random(-tilesize*2/2, tilesize*2/2), math.random(-tilesize*2/2, tilesize*2/2), "bubble", title_world)
           table.insert(title_bubbles, bub)
         end
 
@@ -463,7 +462,7 @@ function love.update(dt)
             aimFor = math.random(#title_bubbles)
             red.follow = title_bubbles[aimFor]
           elseif red.hasOxygen and love.timer.getTime() - red.pickUp > math.random(8,20) then
-            bub = createThing(math.random(-tilesize/2, tilesize/2), math.random(-tilesize/2, tilesize/2), "bubble", title_world)
+            bub = createThing(math.random(-tilesize*2/2, tilesize*2/2), math.random(-tilesize*2/2, tilesize*2/2), "bubble", title_world)
             table.insert(title_bubbles, bub)
             red.hasOxygen = false
 
@@ -496,16 +495,27 @@ function love.keypressed(key)
         love.window.setFullscreen(false)
         love.timer.sleep(0.1)
         love.event.quit()
-    elseif key == "-" and debug then
-        zoom = zoom/2
-    elseif key == "+" and debug then
-        zoom = zoom*2
-    elseif key == "escape" and mode == "game" then
+    elseif (key == "return" or key == "space") and mode == "gameover" then
+        initGame()
+        mode = "title"
+        zoom = 0.25
+        camera:zoomTo(zoom)
+        game_over_music:stop()
+        intro_music = music.intro:play()
+    elseif (key == "escape" or key == "p") and mode == "game" then
         saveX, saveY = player.body:getPosition()
         mode = "title"
         game_music:stop()
         heart_beat:stop()
-    elseif key == "return" and mode == "title" then
+        zoom = 0.25
+        camera:zoomTo(zoom)
+        intro_music = music.intro:play()
+        sounds.pick_up_oxygen:setVolume(.2)
+    elseif key == "-" and debug then
+        zoom = zoom/2
+    elseif key == "+" and debug then
+        zoom = zoom*2
+    elseif (key == "return" or key == "space") and mode == "title" then
         mode = "game"
 
         for name, organ in pairs(organs) do
@@ -515,6 +525,9 @@ function love.keypressed(key)
 
         x, y = player.body:getPosition()
         camera:lookAt(x, y)
+        zoom = 0.25
+        camera:zoomTo(zoom)
+
         intro_music:stop()
         game_music = music.party:play()
         heart_beat = music.heart_beat:play()
@@ -593,7 +606,7 @@ function display_organ_notification(x, y, organ, title_callback)
   title_callback(x + thumbnail_size + 20, y + 10)
 
   love.graphics.setFont(organ_font)
-  love.graphics.printf(organ.name, x + thumbnail_size + 20, y + 30, 1000, "left")
+  love.graphics.printf(organ.name, x + thumbnail_size + 20, y + 20, 1000, "left")
 
   love.graphics.setColor(old_r, old_g, old_b, old_a)
   love.graphics.setFont(old_font)
@@ -726,7 +739,8 @@ function love.draw()
         minutes = math.floor((time-math.floor(time))*60)
         width = love.graphics.getDimensions()
 
-        love.graphics.printf(string.format("%02d:%02d", hours, minutes), 0, 20, width, "center")
+        love.graphics.setFont(subtitle_font)
+        love.graphics.printf(string.format("It's %02d:%02d.", hours, minutes), 0, 20, width, "center")
 
         heart_beat_rate = 1.0 + math.max(0, 100 - min_remaining_oxygen) / 100.0
         heart_beat:setPitch(heart_beat_rate)
@@ -735,7 +749,7 @@ function love.draw()
     elseif mode == "title"  or mode == "gameover" then
 
       love.graphics.setColor(255,255,255)
-      love.graphics.draw(images.bg, 0, 0)
+      love.graphics.draw(images.leerfeld, 0, 0, 0, 1.5, 1.5)
 
       if love.timer.getTime() - blink_timer > 0.5 then
         blink_timer = love.timer.getTime()
@@ -755,7 +769,7 @@ function love.draw()
       end
       for i, bub in pairs(title_bubbles) do
         x,y = bub.body:getPosition()
-        love.graphics.draw(images.bubble, x, y, 0, 1, 1, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
+        love.graphics.draw(images.bubble, x, y, 0, 2, 2, images.bubble:getWidth()/2, images.bubble:getHeight()/2)
       end
 
       camera:detach()
@@ -764,16 +778,17 @@ function love.draw()
       if mode == "title" then
         love.graphics.setColor(255,255,255)
         love.graphics.setFont(title_font)
-        love.graphics.printf("A Bloody Small World!", 0, 100, width, "center")
+        love.graphics.printf("A Bloody Small World", 0, 100, width, "center")
 
         love.graphics.setFont(subtitle_font)
-        love.graphics.printf("made in 48 hours for Ludum Dare 38", 0, height/2-50, width, "center")
-        love.graphics.printf("by A, B, C", 0, height/2+50, width, "center")
+        love.graphics.printf("made in 72 hours for Ludum Dare 38", 0, height/2-30, width, "center")
+        love.graphics.printf("by blinry, Invitus, Pecca, and winniehell", 0, height/2+30, width, "center")
 
         if blink then
-          love.graphics.setColor(175, 175, 236)
-          love.graphics.setFont(love.graphics.newFont(25))
-          love.graphics.printf("Press <Enter> to start!", 0, height - 75, width, "center")
+            --alpha = 0.5+0.5*math.sin(love.timer.getTime()*5)
+            love.graphics.setColor(175, 175, 236)--, alpha*255)
+            love.graphics.setFont(subtitle_font)
+            love.graphics.printf("Press Enter to start!", 0, height - 200, width, "center")
         end
       elseif mode == "gameover" then
         braindead = not organs["B"].alive
@@ -786,14 +801,14 @@ function love.draw()
           end
         end
         love.graphics.setColor(255,255,255)
-        love.graphics.setFont(love.graphics.newFont(40))
-        love.graphics.printf("You died!", 0, 100, width, "center")
+        love.graphics.setFont(subtitle_font)
+        love.graphics.printf("Our human died! :'-(", 0, 200, width, "center")
         if braindead then
-          love.graphics.printf("You are braindead!", 0, 200, width, "center")
+          love.graphics.printf("Our human is braindead! :'-O", 0, 200, width, "center")
         end
         if good_shape then
           gshape_string = "... "..good_shape
-          love.graphics.printf("At least you took good care of your "..gshape_string,0,300, width, "center")
+          love.graphics.printf("At least we took good care of her "..gshape_string.."!\nPress Enter to return to the title screen.",0,400, width, "center")
         end
 
       end
