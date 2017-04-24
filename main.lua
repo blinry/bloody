@@ -617,17 +617,20 @@ function love.draw()
                 display_organ_notification(920, y, organ, function (title_x, title_y)
                     local old_r, old_g, old_b, old_a = love.graphics.getColor()
 
+                    local bar_width = remaining
+
                     if remaining > 100 then
                         love.graphics.setColor(0, 255, 0)
                     elseif remaining > 50 then
                         love.graphics.setColor(255 * (100 - remaining) / 50, 255, 0)
-                    elseif remaining > 0 then
-                        love.graphics.setColor(255, 255 * remaining / 50, 0)
+                    elseif remaining > 20 then
+                        love.graphics.setColor(255, 255 * (remaining - 20) / 30, 0)
                     else
                         love.graphics.setColor(255, 0, 0)
                     end
 
-                    love.graphics.printf(remaining, title_x, title_y, 1000, "left")
+                    --love.graphics.printf(remaining, title_x, title_y, 1000, "left")
+                    love.graphics.rectangle("fill", title_x, title_y, bar_width, 10, 2)
 
                     love.graphics.setColor(old_r, old_g, old_b, old_a)
                 end)
