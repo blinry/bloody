@@ -89,8 +89,9 @@ function parseWorld(filename)
     end
 end
 
-function createCirclePath(x, y, radius, points, startangle, endangle)
+function createCirclePath(x, y, radius, ignored_parameter, startangle, endangle)
   local path = {}
+  points = 5
 
   local stepsize = (endangle - startangle) / (points-1)
 
