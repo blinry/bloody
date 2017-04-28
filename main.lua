@@ -6,7 +6,7 @@ vector = require "hump.vector"
 Timer = require "hump.timer"
 Camera = require "hump.camera"
 
-max_oxygen = 400
+max_oxygen = 300
 bubble_oxygen = 10
 
 -- convert HSL to RGB (input and output range: 0 - 255)
@@ -230,21 +230,22 @@ function initGame()
     quests = {}
 
     quests[8] = {organ="F", before={
-        "Okay, class! Welcome to your first day in the blood stream!",
+        "Okay, class! Welcome to your first day in the blood stream! (Press Space to continue)",
         "This is the heart, where all our journeys begin and end.",
         "Remember, if you see a colorful thing in the bloodstream:",
         "They are not dangerous! ... not to us.",
         "And now: Attention, everyone! Our human is about to wake up!",
         "First, she will need some energy in her legs, to get up and walk to work!",
-        "Everybody pick up some oxygen from Mr Lung!",
+        "Everybody pick up some oxygen from Mr Lung up there!",
         "Then, follow me allll the way down to the feet!"
     }, after={
         "Nicely done! Thanks to you, our human got to work on time!",
         "Even though she left a little late.",
-        "You're all doing a really great job, by the way! Yay!"
+        "You're all doing a really great job, by the way!",
+        "Let's keep delivering oxygen to the feet!",
     }}
 
-    quests[10] = {organ="B", before={
+    quests[11] = {organ="B", before={
         "Next: Heavy office work coming up! Let's get some oxygen to the brain!",
         "We've discussed before that we have a huge responsibility here, right?",
         "Without us, none of the other organs would be able to function!"
@@ -254,7 +255,7 @@ function initGame()
         "Put it back! Jeez!"
     }}
 
-    quests[12] = {organ="S", before={
+    quests[13] = {organ="S", before={
         "Are you cells hungry? Let's go to the stomach for a lunch break!",
         "Our human should gulp down some food soon, as well, and will need the oxygen!"
     }, after={
@@ -271,7 +272,7 @@ function initGame()
         "There is even a booth where you can buy your photo!"
     }}
 
-    quests[18] = {organ=nil, before={
+    quests[19] = {organ=nil, before={
         "Eeew, someone sneezed at our human!",
         "Watch out for more viruses and white blood cells!"
     },
@@ -281,7 +282,7 @@ function initGame()
         end
     end}
 
-    quests[20] = {organ="L", before={
+    quests[21] = {organ="L", before={
         "Work's over, so the rest of the day should be easy! ...",
         "Oh, I just got an emergency report:",
         "Our human started drinking cocktails!",
@@ -326,10 +327,10 @@ function initGame()
     organs["O"] = {key="O", name = "Lung", immune = true}
 
     for name, organ in pairs(organs) do
-        organ.remaining = 200
+        organ.remaining = max_oxygen/2
         organ.alive = true
     end
-    organs["F"].remaining = max_oxygen
+    organs["F"].remaining = max_oxygen/2
 
     tilesize = 3000
     parseWorld("level.txt")
