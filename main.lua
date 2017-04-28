@@ -7,7 +7,7 @@ Timer = require "hump.timer"
 Camera = require "hump.camera"
 
 max_oxygen = 400
-bubble_oxygen = 8
+bubble_oxygen = 10
 
 -- convert HSL to RGB (input and output range: 0 - 255)
 function HSL(h, s, l, a)
