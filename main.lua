@@ -237,7 +237,7 @@ function initGame()
         "And now: Attention, everyone! Our human is about to wake up!",
         "First, she will need some energy in her legs, to get up and walk to work!",
         "Everybody pick up some oxygen from Mr Lung!",
-        "Then, follow me allll the way down!"
+        "Then, follow me allll the way down to the feet!"
     }, after={
         "Nicely done! Thanks to you, our human got to work on time!",
         "Even though she left a little late.",
