@@ -54,7 +54,7 @@ function parseWorld(filename)
             signs[c].ox = 0
             signs[c].oy = 0
 
-            o = 1200
+            o = tilesize
 
             if offset == "<" then
                 signs[c].ox = -o
@@ -92,7 +92,7 @@ end
 
 function createCirclePath(x, y, radius, ignored_parameter, startangle, endangle)
   local path = {}
-  points = 5
+  points = 15
 
   local stepsize = (endangle - startangle) / (points-1)
 

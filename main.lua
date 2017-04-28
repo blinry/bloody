@@ -679,6 +679,43 @@ function love.draw()
 
         drawLevel()
 
+        love.graphics.setFont(fonts.baloo[150])
+        for i, sign in pairs(signs) do
+            if sign.ox then
+                sx = (sign.pos[1]+0.5)*tilesize+sign.ox
+                sy = (sign.pos[2]+0.5)*tilesize+sign.oy
+                l = tilesize/2
+                o = tilesize/16
+
+                love.graphics.setColor(255, 200, 200, 150)
+
+                if sign.left then
+                    love.graphics.draw(images.sign, sx, sy, math.pi, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.left, sx-l-o, sy-170, l, "right")
+                    love.graphics.setColor(255, 200, 200, 150)
+                end
+                if sign.right then
+                    love.graphics.draw(images.sign, sx, sy, 0, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.right, sx+o, sy-170, l, "left")
+                    love.graphics.setColor(255, 200, 200, 150)
+                end
+                if sign.up then
+                    love.graphics.draw(images.sign, sx, sy, math.pi/2*3, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.up, sx+170, sy-l-o, l, "right", math.pi/2)
+                    love.graphics.setColor(255, 200, 200, 150)
+                end
+                if sign.down then
+                    love.graphics.draw(images.sign, sx, sy, math.pi/2, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.printf(sign.down, sx+170, sy+o, l, "left", math.pi/2)
+                    love.graphics.setColor(255, 255, 255)
+                end
+            end
+        end
+
         f = 0.5
 
         for i, thing in pairs(things) do
@@ -704,41 +741,6 @@ function love.draw()
                 dy = math.sin(t*4)*100
                 love.graphics.draw(images.lunge, x+200, y+dy-300, 0, -f*3, f*3, images.lunge:getWidth()/2, images.lunge:getHeight()/2)
                 love.graphics.draw(images.Eiswagen, x-300, y, 0, f*2, f*2, images.Eiswagen:getWidth()/2, images.Eiswagen:getHeight()/2)
-            end
-        end
-
-        love.graphics.setFont(fonts.baloo[150])
-        for i, sign in pairs(signs) do
-            if sign.ox then
-                sx = (sign.pos[1]+0.5)*tilesize+sign.ox
-                sy = (sign.pos[2]+0.5)*tilesize+sign.oy
-                l = tilesize/2
-                o = tilesize/16
-
-                if sign.left then
-                    love.graphics.draw(images.sign, sx, sy, math.pi, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.left, sx-l-o, sy-170, l, "right")
-                    love.graphics.setColor(255, 255, 255)
-                end
-                if sign.right then
-                    love.graphics.draw(images.sign, sx, sy, 0, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.right, sx+o, sy-170, l, "left")
-                    love.graphics.setColor(255, 255, 255)
-                end
-                if sign.up then
-                    love.graphics.draw(images.sign, sx, sy, math.pi/2*3, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.up, sx+170, sy-l-o, l, "right", math.pi/2)
-                    love.graphics.setColor(255, 255, 255)
-                end
-                if sign.down then
-                    love.graphics.draw(images.sign, sx, sy, math.pi/2, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.down, sx+170, sy+o, l, "left", math.pi/2)
-                    love.graphics.setColor(255, 255, 255)
-                end
             end
         end
 
