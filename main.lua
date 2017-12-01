@@ -688,31 +688,33 @@ function love.draw()
                 l = tilesize/2
                 o = tilesize/16
 
-                love.graphics.setColor(255, 200, 200, 150)
-
                 if sign.left then
-                    love.graphics.draw(images.sign, sx, sy, math.pi, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.left, sx-l-o, sy-170, l, "right")
                     love.graphics.setColor(255, 200, 200, 150)
+                    love.graphics.draw(images.sign, sx, sy, math.pi, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0, 255)
+                    love.graphics.printf(sign.left, sx-l-o, sy-170, l, "right")
+                    love.graphics.setColor(255, 255, 255, 255)
                 end
                 if sign.right then
-                    love.graphics.draw(images.sign, sx, sy, 0, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.right, sx+o, sy-170, l, "left")
                     love.graphics.setColor(255, 200, 200, 150)
+                    love.graphics.draw(images.sign, sx, sy, 0, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0, 255)
+                    love.graphics.printf(sign.right, sx+o, sy-170, l, "left")
+                    love.graphics.setColor(255, 255, 255, 255)
                 end
                 if sign.up then
-                    love.graphics.draw(images.sign, sx, sy, math.pi/2*3, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
-                    love.graphics.printf(sign.up, sx+170, sy-l-o, l, "right", math.pi/2)
                     love.graphics.setColor(255, 200, 200, 150)
+                    love.graphics.draw(images.sign, sx, sy, math.pi/2*3, 5, 5, 0, images.sign:getHeight()/2)
+                    love.graphics.setColor(0, 0, 0, 255)
+                    love.graphics.printf(sign.up, sx+170, sy-l-o, l, "right", math.pi/2)
+                    love.graphics.setColor(255, 255, 255, 255)
                 end
                 if sign.down then
+                    love.graphics.setColor(255, 200, 200, 150)
                     love.graphics.draw(images.sign, sx, sy, math.pi/2, 5, 5, 0, images.sign:getHeight()/2)
-                    love.graphics.setColor(0, 0, 0)
+                    love.graphics.setColor(0, 0, 0, 255)
                     love.graphics.printf(sign.down, sx+170, sy+o, l, "left", math.pi/2)
-                    love.graphics.setColor(255, 255, 255)
+                    love.graphics.setColor(255, 255, 255, 255)
                 end
             end
         end

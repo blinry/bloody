@@ -240,7 +240,7 @@ function wallipyTiles()
       if level.tiles[x][y].typ == "O" then
           if not organs["O"].pos then
               organs["O"].pos = {x, y}
-              organs["O"].image = images.lunge_groß
+              organs["O"].image = images.lunge_gross
               oxy = createThing((x+1)*tilesize, (y+1)*tilesize, "oxystation", world)
               table.insert(things, oxy)
           end
